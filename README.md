@@ -1,0 +1,1 @@
+# WordPress VIP decoupled bundle
