@@ -33,7 +33,7 @@ function parse_blocks( $post ) {
 		$attributes = array_map( function ( $key ) use ( $block ) {
 			return [
 				'name'  => $key,
-				'value' => $block['attributes'][ $key ],
+				'value' => $block['attrs'][ $key ],
 			];
 		}, array_keys( $block['attrs'] ) );
 
