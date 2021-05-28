@@ -1,5 +1,6 @@
 <?php
 /**
+ * @package vip-bundle-decoupled
  */
 
 namespace WPCOMVIP\Decoupled\Blocks;
