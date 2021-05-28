@@ -46,6 +46,10 @@ function parse_blocks( $post ) {
 		];
 	}, $blocks );
 
+	$blocks = array_filter( $blocks, function( $block ) {
+		return strlen( $block['innerHTML'] ) != 0;
+	} );
+
 	return [
 		'blocks'      => $blocks,
 		'isGutenberg' => $is_gutenberg,
