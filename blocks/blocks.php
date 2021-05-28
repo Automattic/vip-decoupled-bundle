@@ -37,9 +37,11 @@ function parse_blocks( $post ) {
 			];
 		}, array_keys( $block['attrs'] ) );
 
+		$content = preg_replace( '#^<([A-z][A-z0-9]*)\b[^>]*>(.*?)</\1>$#', '$2', trim($block['innerHTML']) );
+
 		return [
 			'attributes' => $attributes,
-			'innerHTML'  => $block['innerHTML'],
+			'innerHTML'  => $content,
 			'name'       => $block['blockName'],
 		];
 	}, $blocks );
