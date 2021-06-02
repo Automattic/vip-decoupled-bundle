@@ -44,3 +44,16 @@ function vip_decoupled_menu() {
     add_menu_page( "VIP Decoupled", "VIP Decoupled", "edit_plugins", "vip-decoupled", 'vip_decoupled_menu_content', '', 3 );
 }
 
+add_action( 'admin_menu', 'vip_decoupled_menu' );
+
+function vip_decoupled_load_scripts($hook) {
+    // Load only on ?page=mypluginname
+    if( $hook != 'toplevel_page_vip-decoupled' ) {
+         return;
+    }
+    
+    wp_enqueue_style( 'vip-decoupled' );
+    wp_enqueue_script( 'vip-decoupled' );
+}
+
+add_action( 'admin_enqueue_scripts', 'vip_decoupled_load_scripts' );
