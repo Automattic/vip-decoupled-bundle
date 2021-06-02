@@ -24,3 +24,15 @@ require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
  * Make Gutenberg blocks available in WPGraphQL
  */
 require_once __DIR__ . '/blocks/blocks.php';
+function vip_decoupled_menu() {
+    function vip_decoupled_menu_content() {
+        ?>
+            <h1>
+                <?php esc_html_e( 'Welcome.', 'vip-decoupled-hello' ); ?>
+            </h1>
+        <?php
+    }
+
+    add_menu_page( "VIP Decoupled", "VIP Decoupled", "edit_plugins", "vip-decoupled", 'vip_decoupled_menu_content', '', 3 );
+}
+
