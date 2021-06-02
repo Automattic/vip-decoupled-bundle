@@ -24,6 +24,14 @@ require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
  * Make Gutenberg blocks available in WPGraphQL
  */
 require_once __DIR__ . '/blocks/blocks.php';
+
+function vip_decoupled_register_scripts() {
+    wp_register_style( 'vip-decoupled', plugins_url( '/assets/style.css', __FILE__ ) );
+    wp_register_script( 'vip-decoupled', plugins_url( '/assets/script.js', __FILE__ ) );
+}
+
+add_action( 'admin_enqueue_scripts', 'vip_decoupled_register_scripts' );
+
 function vip_decoupled_menu() {
     function vip_decoupled_menu_content() {
         ?>
