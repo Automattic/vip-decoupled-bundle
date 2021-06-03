@@ -25,35 +25,20 @@ require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
  */
 require_once __DIR__ . '/blocks/blocks.php';
 
-function vip_decoupled_register_scripts() {
-    wp_register_style( 'vip-decoupled', plugins_url( '/assets/style.css', __FILE__ ) );
-    wp_register_script( 'vip-decoupled', plugins_url( '/assets/script.js', __FILE__ ) );
-}
+function vip_decoupled_menu_content() {
+    if ( !current_user_can( 'manage_options' ) )  {
+        wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+    }
 
-add_action( 'admin_enqueue_scripts', 'vip_decoupled_register_scripts' );
+    ?>
+        <h1>
+            <?php esc_html_e( 'Welcome.', 'vip-decoupled-hello' ); ?>
+        </h1>
+    <?php
+}
 
 function vip_decoupled_menu() {
-    function vip_decoupled_menu_content() {
-        ?>
-            <h1>
-                <?php esc_html_e( 'Welcome.', 'vip-decoupled-hello' ); ?>
-            </h1>
-        <?php
-    }
-
-    add_menu_page( "VIP Decoupled", "VIP Decoupled", "edit_plugins", "vip-decoupled", 'vip_decoupled_menu_content', '', 3 );
+    add_options_page( "VIP Decoupled", "VIP Decoupled", "manage_options", "vip-decoupled", 'vip_decoupled_menu_content' );  
 }
 
-add_action( 'admin_menu', 'vip_decoupled_menu' );
-
-function vip_decoupled_load_scripts($hook) {
-    // Load only on ?page=mypluginname
-    if( $hook != 'toplevel_page_vip-decoupled' ) {
-         return;
-    }
-    
-    wp_enqueue_style( 'vip-decoupled' );
-    wp_enqueue_script( 'vip-decoupled' );
-}
-
-add_action( 'admin_enqueue_scripts', 'vip_decoupled_load_scripts' );
+add_action( 'admin_init', 'vip_decoupled_menu' );
