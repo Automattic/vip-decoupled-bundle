@@ -12,7 +12,7 @@
  * License: GPL-3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  *
- * @package vip-decoupled-bundle
+ * @package vip-bundle-decoupled
  */
 
 /**
@@ -24,3 +24,13 @@ require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
  * Make Gutenberg blocks available in WPGraphQL
  */
 require_once __DIR__ . '/blocks/blocks.php';
+
+/**
+ * Adjust CORS headers
+ */
+require_once __DIR__ . '/cors/cors.php';
+
+/**
+ * Enable decoupled previews
+ */
+require_once __DIR__ . '/preview/preview.php';
