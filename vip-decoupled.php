@@ -25,12 +25,16 @@ $options = get_option( 'vip_decoupled_settings', $default_options );
 /**
  * WPGraphQL 1.3.8
  */
-require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
+if( $options["vip_decoupled_plugin_wpgraphql"] == '1' ) {
+    require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
+}
 
 /**
  * Make Gutenberg blocks available in WPGraphQL
  */
-require_once __DIR__ . '/blocks/blocks.php';
+if( $options["vip_decoupled_plugin_blocks"] == '1' ) {
+    require_once __DIR__ . '/blocks/blocks.php';
+}
 
 /**
  * Adjust CORS headers
