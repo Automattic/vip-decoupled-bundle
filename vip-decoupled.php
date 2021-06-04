@@ -64,7 +64,8 @@ function vip_decoupled_settings_section_callback() {
 } //
 
 function vip_decoupled_menu() {
-    add_options_page( "VIP Decoupled", "VIP Decoupled", "manage_options", "vip-decoupled", 'vip_decoupled_menu_content' );  
+    add_options_page( "VIP Decoupled", "VIP Decoupled", "manage_options", "vip_decoupled", 'vip_decoupled_menu_content' );  
+}
 
 function vip_decoupled_settings() {
     register_setting(
