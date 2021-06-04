@@ -15,6 +15,13 @@
  * @package vip-bundle-decoupled
  */
 
+$default_options = array(
+    'vip_decoupled_plugin_wpgraphql' => '1',
+    'vip_decoupled_plugin_blocks' => '1',
+);
+
+$options = get_option( 'vip_decoupled_settings', $default_options );
+
 /**
  * WPGraphQL 1.3.8
  */
@@ -54,7 +61,7 @@ function vip_decoupled_menu_content() {
 }
 
 function vip_decoupled_plugin_blocks_render($args) {
-    $options = get_option( 'vip_decoupled_settings' );
+    global $options;
 
     ?>
         <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_blocks]' value="1" <?php checked( '1', $options["vip_decoupled_plugin_blocks"] ); ?> />
@@ -63,7 +70,7 @@ function vip_decoupled_plugin_blocks_render($args) {
 }
 
 function vip_decoupled_plugin_wpgraphql_render($args) {
-    $options = get_option( 'vip_decoupled_settings' );
+    global $options;
 
     ?>
         <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_wpgraphql]' value="1" <?php checked( '1', $options["vip_decoupled_plugin_wpgraphql"] ); ?> />
