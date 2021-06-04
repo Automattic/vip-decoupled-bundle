@@ -1,12 +1,13 @@
 <?php
 /**
+ * @package vip-bundle-decoupled
  */
 
 namespace WPCOMVIP\Decoupled\Blocks;
 
 use WPGraphQL;
 
-function parse_blocks( $post ) {
+function parse_blocks( $post_model ) {
 	$version = '0.1.0';
 
 	if ( ! function_exists( 'parse_blocks' ) || ! function_exists( 'has_blocks' ) ) {
@@ -17,8 +18,14 @@ function parse_blocks( $post ) {
 		];
 	}
 
-	$is_gutenberg = \has_blocks( $post->contentRaw );
-	$blocks = \parse_blocks( $post->contentRaw );
+	// WPGraphQL's Post model restricts access to the raw post_content (contentRaw)
+	// based on "edit_posts" cap. Since we want to serve blocks even to logged-out
+	// users -- and because we are parsing this content before returning it --
+	// we'll bypass the model and access the raw content directly.
+	$post = get_post( $post_model->ID );
+
+	$is_gutenberg = \has_blocks( $post->post_content );
+	$blocks = \parse_blocks( $post->post_content );
 
 	// Classic editor blocks get a blockName of null with the raw post content
 	// shoved inside. Set a usable block name and allow the client to use the HTML
@@ -37,12 +44,18 @@ function parse_blocks( $post ) {
 			];
 		}, array_keys( $block['attrs'] ) );
 
+		$content = preg_replace( '#^<([A-z][A-z0-9]*)\b[^>]*>(.*?)</\1>$#', '$2', trim($block['innerHTML']) );
+
 		return [
 			'attributes' => $attributes,
-			'innerHTML'  => $block['innerHTML'],
+			'innerHTML'  => $content,
 			'name'       => $block['blockName'],
 		];
 	}, $blocks );
+
+	$blocks = array_filter( $blocks, function( $block ) {
+		return strlen( $block['innerHTML'] ) != 0;
+	} );
 
 	return [
 		'blocks'      => $blocks,
