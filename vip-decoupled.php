@@ -98,4 +98,5 @@ function vip_decoupled_settings() {
     );
 }
 
-add_action( 'admin_init', 'vip_decoupled_menu' );
+add_action( 'admin_menu', 'vip_decoupled_menu' );
+add_action( 'admin_init', 'vip_decoupled_settings' );
