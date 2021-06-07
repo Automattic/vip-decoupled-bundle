@@ -27,16 +27,15 @@ function parse_blocks( $post_model ) {
 	$is_gutenberg = \has_blocks( $post->post_content );
 	$blocks = \parse_blocks( $post->post_content );
 
-	// Classic editor blocks get a blockName of null with the raw post content
-	// shoved inside. Set a usable block name and allow the client to use the HTML
-	// as they see fit (including parsing with @wordpress/blocks#rawHandler).
-	//
-	// Additionally, map the block attributes to the shape of BlockAttribute.
 	$blocks = array_map( function ( $block ) {
+		// Classic editor blocks get a blockName of null with the raw post content
+		// shoved inside. Set a usable block name and allow the client to use the
+		// HTML as they see fit.
 		if ( null === $block['blockName'] ) {
 			$block['blockName'] = 'core/classic-editor';
 		}
 
+		// Map the block attributes to the shape of BlockAttribute.
 		$attributes = array_map( function ( $key ) use ( $block ) {
 			return [
 				'name'  => $key,
@@ -44,12 +43,24 @@ function parse_blocks( $post_model ) {
 			];
 		}, array_keys( $block['attrs'] ) );
 
-		$content = preg_replace( '#^<([A-z][A-z0-9]*)\b[^>]*>(.*?)</\1>$#', '$2', trim($block['innerHTML']) );
+		$tagName = null;
+		$innerHTML = $outerHTML = trim( $block['innerHTML'] );
+
+		// Strip wrapping tags from the content and set as a property on the block.
+		// This allows the front-end implementor to delegate tag creation to a
+		// component.
+		preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $innerHTML, $matches );
+		if ( isset( $matches[1] ) ) {
+			$innerHTML = $matches[3];
+			$tagName   = $matches[1];
+		}
 
 		return [
 			'attributes' => $attributes,
-			'innerHTML'  => $content,
+			'innerHTML'  => $innerHTML,
 			'name'       => $block['blockName'],
+			'outerHTML'  => $outerHTML,
+			'tagName'    => $tagName,
 		];
 	}, $blocks );
 
@@ -93,11 +104,19 @@ function register_types() {
 				],
 				'innerHTML' => [
 					'type'        => 'String',
-					'description' => 'Content block inner HTML',
+					'description' => 'Content block inner HTML (without wrapping tag)',
 				],
-				'name' => [
+				'name'      => [
 					'type'        => 'String',
 					'description' => 'Content block name',
+				],
+				'outerHTML' => [
+					'type'        => 'String',
+					'description' => 'Content block HTML (with wrapping tag)',
+				],
+				'tagName'   => [
+					'type'        => 'String',
+					'description' => 'Content block HTML wrapping tag name',
 				],
 			],
 		],
@@ -124,20 +143,15 @@ function register_types() {
 		],
 	);
 
-	$post_types = array_filter( WPGraphQL::get_allowed_post_types(), function ( $post_type ) {
-		return post_type_supports( $post_type, 'editor' );
-	} );
-
-	foreach ( $post_types as $post_type ) {
-		register_graphql_field(
-			get_post_type_object( $post_type )->graphql_single_name,
-			'contentBlocks',
-			[
-				'type'        => 'ContentBlocks',
-				'description' => 'A block representation of post content',
-				'resolve'     => __NAMESPACE__ . '\\parse_blocks',
-			]
-		);
-	}
+	// Register the field on every post type that supports 'editor'.
+	register_graphql_field(
+		'NodeWithContentEditor',
+		'contentBlocks',
+		[
+			'type'        => 'ContentBlocks',
+			'description' => 'A block representation of post content',
+			'resolve'     => __NAMESPACE__ . '\\parse_blocks',
+		]
+	);
 }
 add_action( 'graphql_register_types', __NAMESPACE__ . '\\register_types', 10, 0 );
