@@ -15,24 +15,24 @@
  * @package vip-bundle-decoupled
  */
 
-$default_options = array(
+$vip_decoupled_default_options = array(
     'vip_decoupled_plugin_wpgraphql' => '1',
     'vip_decoupled_plugin_blocks' => '1',
 );
 
-$options = get_option( 'vip_decoupled_settings', $default_options );
+$vip_decoupled_options = get_option( 'vip_decoupled_settings', $vip_decoupled_default_options );
 
 /**
  * WPGraphQL 1.3.8
  */
-if( $options["vip_decoupled_plugin_wpgraphql"] == '1' ) {
+if( $vip_decoupled_options["vip_decoupled_plugin_wpgraphql"] == '1' ) {
     require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
 }
 
 /**
  * Make Gutenberg blocks available in WPGraphQL
  */
-if( $options["vip_decoupled_plugin_blocks"] == '1' ) {
+if( $vip_decoupled_options["vip_decoupled_plugin_blocks"] == '1' ) {
     require_once __DIR__ . '/blocks/blocks.php';
 }
 
@@ -65,19 +65,19 @@ function vip_decoupled_menu_content() {
 }
 
 function vip_decoupled_plugin_blocks_render($args) {
-    global $options;
+    global $vip_decoupled_options;
 
     ?>
-        <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_blocks]' value="1" <?php checked( '1', $options["vip_decoupled_plugin_blocks"] ); ?> />
+        <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_blocks]' value="1" <?php checked( '1', $vip_decoupled_options["vip_decoupled_plugin_blocks"] ); ?> />
     <?php
      
 }
 
 function vip_decoupled_plugin_wpgraphql_render($args) {
-    global $options;
+    global $vip_decoupled_options;
 
     ?>
-        <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_wpgraphql]' value="1" <?php checked( '1', $options["vip_decoupled_plugin_wpgraphql"] ); ?> />
+        <input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_wpgraphql]' value="1" <?php checked( '1', $vip_decoupled_options["vip_decoupled_plugin_wpgraphql"] ); ?> />
     <?php
 }
 
