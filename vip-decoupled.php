@@ -50,3 +50,8 @@ require_once __DIR__ . '/preview/preview.php';
  * Enable settings
  */
 require_once __DIR__ . '/settings/settings.php';
+
+/**
+ * Adjust resource URLs
+ */
+require_once __DIR__ . '/urls/urls.php';
