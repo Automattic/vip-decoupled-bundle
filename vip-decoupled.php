@@ -15,15 +15,26 @@
  * @package vip-bundle-decoupled
  */
 
+$vip_decoupled_default_options = array(
+    'vip_decoupled_plugin_wpgraphql' => '1',
+    'vip_decoupled_plugin_blocks' => '1',
+);
+
+$vip_decoupled_options = get_option( 'vip_decoupled_settings', $vip_decoupled_default_options );
+
 /**
  * WPGraphQL 1.3.8
  */
-require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
+if( $vip_decoupled_options["vip_decoupled_plugin_wpgraphql"] == '1' ) {
+    require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
+}
 
 /**
  * Make Gutenberg blocks available in WPGraphQL
  */
-require_once __DIR__ . '/blocks/blocks.php';
+if( $vip_decoupled_options["vip_decoupled_plugin_blocks"] == '1' ) {
+    require_once __DIR__ . '/blocks/blocks.php';
+}
 
 /**
  * Adjust CORS headers
@@ -34,3 +45,8 @@ require_once __DIR__ . '/cors/cors.php';
  * Enable decoupled previews
  */
 require_once __DIR__ . '/preview/preview.php';
+
+/**
+ * Enable settings
+ */
+require_once __DIR__ . '/settings/settings.php';
