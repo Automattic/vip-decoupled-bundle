@@ -1,0 +1,13 @@
+{
+    "name": "automattic/vip-bundle-decoupled",
+    "description": "A WordPress plugin bundle to support decoupled WordPress",
+    "type": "wordpress-plugin",
+    "require": {
+        "php": ">=7.0",
+        "wp-coding-standards/wpcs": "^2.3",
+        "automattic/vipwpcs": "^2.3",
+        "phpcompatibility/phpcompatibility-wp": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
+    },
+    "license": "GPL-2.0"
+}
