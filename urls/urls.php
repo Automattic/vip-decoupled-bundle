@@ -14,7 +14,7 @@ namespace WPCOMVIP\Decoupled\URLs;
  * @return string
  */
 function update_resource_url( $resource_url ) {
-	$home_path = wp_make_link_relative( get_home_url() );
+	$home_path     = wp_make_link_relative( get_home_url() );
 	$resource_path = wp_make_link_relative( $resource_url );
 
 	$relative_resource_path = preg_replace( sprintf( '#^%s#', $home_path ), '/', $resource_path );
@@ -22,7 +22,7 @@ function update_resource_url( $resource_url ) {
 	return site_url( $relative_resource_path );
 }
 
-function add_filters () {
+function add_filters() {
 	$filters = [
 		'author_feed_link',
 		'category_feed_link',
