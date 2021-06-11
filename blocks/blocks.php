@@ -12,9 +12,9 @@ function parse_blocks( $post_model ) {
 
 	if ( ! function_exists( 'parse_blocks' ) || ! function_exists( 'has_blocks' ) ) {
 		return [
-			'blocks' => [],
+			'blocks'      => [],
 			'isGutenberg' => false,
-			'version' => $version,
+			'version'     => $version,
 		];
 	}
 
@@ -25,48 +25,57 @@ function parse_blocks( $post_model ) {
 	$post = get_post( $post_model->ID );
 
 	$is_gutenberg = \has_blocks( $post->post_content );
-	$blocks = \parse_blocks( $post->post_content );
+	$blocks       = \parse_blocks( $post->post_content );
 
-	$blocks = array_map( function ( $block ) {
-		// Classic editor blocks get a blockName of null with the raw post content
-		// shoved inside. Set a usable block name and allow the client to use the
-		// HTML as they see fit.
-		if ( null === $block['blockName'] ) {
-			$block['blockName'] = 'core/classic-editor';
-		}
+	$blocks = array_map(
+		function ( $block ) {
+			// Classic editor blocks get a blockName of null with the raw post content
+			// shoved inside. Set a usable block name and allow the client to use the
+			// HTML as they see fit.
+			if ( null === $block['blockName'] ) {
+				  $block['blockName'] = 'core/classic-editor';
+			}
 
-		// Map the block attributes to the shape of BlockAttribute.
-		$attributes = array_map( function ( $key ) use ( $block ) {
+			// Map the block attributes to the shape of BlockAttribute.
+			$attributes = array_map(
+				function ( $key ) use ( $block ) {
+					return [
+						'name'  => $key,
+						'value' => $block['attrs'][ $key ],
+					];
+				},
+				array_keys( $block['attrs'] ) 
+			);
+
+			$tagName   = null;
+			$innerHTML = $outerHTML = trim( $block['innerHTML'] );
+
+			// Strip wrapping tags from the content and set as a property on the block.
+			// This allows the front-end implementor to delegate tag creation to a
+			// component.
+			preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $innerHTML, $matches );
+			if ( isset( $matches[1] ) ) {
+				$innerHTML = $matches[3];
+				$tagName   = $matches[1];
+			}
+
 			return [
-				'name'  => $key,
-				'value' => $block['attrs'][ $key ],
+				'attributes' => $attributes,
+				'innerHTML'  => $innerHTML,
+				'name'       => $block['blockName'],
+				'outerHTML'  => $outerHTML,
+				'tagName'    => $tagName,
 			];
-		}, array_keys( $block['attrs'] ) );
+		},
+		$blocks 
+	);
 
-		$tagName = null;
-		$innerHTML = $outerHTML = trim( $block['innerHTML'] );
-
-		// Strip wrapping tags from the content and set as a property on the block.
-		// This allows the front-end implementor to delegate tag creation to a
-		// component.
-		preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $innerHTML, $matches );
-		if ( isset( $matches[1] ) ) {
-			$innerHTML = $matches[3];
-			$tagName   = $matches[1];
-		}
-
-		return [
-			'attributes' => $attributes,
-			'innerHTML'  => $innerHTML,
-			'name'       => $block['blockName'],
-			'outerHTML'  => $outerHTML,
-			'tagName'    => $tagName,
-		];
-	}, $blocks );
-
-	$blocks = array_filter( $blocks, function( $block ) {
-		return strlen( $block['innerHTML'] ) != 0;
-	} );
+	$blocks = array_filter(
+		$blocks,
+		function( $block ) {
+			return strlen( $block['innerHTML'] ) != 0;
+		} 
+	);
 
 	return [
 		'blocks'      => $blocks,
@@ -98,23 +107,23 @@ function register_types() {
 		[
 			'description' => 'Content block',
 			'fields'      => [
-				'attributes'    => [
+				'attributes' => [
 					'type'        => [ 'list_of' => 'ContentBlockAttribute' ],
 					'description' => 'Content block attributes',
 				],
-				'innerHTML' => [
+				'innerHTML'  => [
 					'type'        => 'String',
 					'description' => 'Content block inner HTML (without wrapping tag)',
 				],
-				'name'      => [
+				'name'       => [
 					'type'        => 'String',
 					'description' => 'Content block name',
 				],
-				'outerHTML' => [
+				'outerHTML'  => [
 					'type'        => 'String',
 					'description' => 'Content block HTML (with wrapping tag)',
 				],
-				'tagName'   => [
+				'tagName'    => [
 					'type'        => 'String',
 					'description' => 'Content block HTML wrapping tag name',
 				],
@@ -135,7 +144,7 @@ function register_types() {
 					'type'        => 'Boolean',
 					'description' => 'Whether the post was created with the Gutenberg editor',
 				],
-				'version'      => [
+				'version'     => [
 					'type'        => 'String',
 					'description' => 'Content block version',
 				],
