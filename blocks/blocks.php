@@ -33,7 +33,7 @@ function parse_blocks( $post_model ) {
 			// shoved inside. Set a usable block name and allow the client to use the
 			// HTML as they see fit.
 			if ( null === $block['blockName'] ) {
-				  $block['blockName'] = 'core/classic-editor';
+				$block['blockName'] = 'core/classic-editor';
 			}
 
 			// Map the block attributes to the shape of BlockAttribute.
@@ -47,24 +47,25 @@ function parse_blocks( $post_model ) {
 				array_keys( $block['attrs'] ) 
 			);
 
-			$tagName   = null;
-			$innerHTML = $outerHTML = trim( $block['innerHTML'] );
+			$tag_name   = null;
+			$inner_html = trim( $block['innerHTML'] );
+			$outer_html = $inner_html;
 
 			// Strip wrapping tags from the content and set as a property on the block.
 			// This allows the front-end implementor to delegate tag creation to a
 			// component.
-			preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $innerHTML, $matches );
+			preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $inner_html, $matches );
 			if ( isset( $matches[1] ) ) {
-				$innerHTML = $matches[3];
-				$tagName   = $matches[1];
+				$inner_html = $matches[3];
+				$tag_name   = $matches[1];
 			}
 
 			return [
 				'attributes' => $attributes,
-				'innerHTML'  => $innerHTML,
+				'innerHTML'  => $inner_html,
 				'name'       => $block['blockName'],
-				'outerHTML'  => $outerHTML,
-				'tagName'    => $tagName,
+				'outerHTML'  => $outer_html,
+				'tagName'    => $tag_name,
 			];
 		},
 		$blocks 

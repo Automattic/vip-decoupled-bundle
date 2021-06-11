@@ -5,7 +5,7 @@
 
 function vip_decoupled_menu_content() {
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+		wp_die( esc_html( __( 'You do not have sufficient permissions to access this page.' ) ) );
 	}
 
 	?>
@@ -26,7 +26,6 @@ function vip_decoupled_plugin_blocks_render( $args ) {
 	?>
 		<input type='checkbox' name='vip_decoupled_settings[vip_decoupled_plugin_blocks]' value="1" <?php checked( '1', $vip_decoupled_options['vip_decoupled_plugin_blocks'] ); ?> />
 	<?php
-	 
 }
 
 function vip_decoupled_plugin_wpgraphql_render( $args ) {

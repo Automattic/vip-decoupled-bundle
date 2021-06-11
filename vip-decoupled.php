@@ -25,14 +25,14 @@ $vip_decoupled_options = get_option( 'vip_decoupled_settings', $vip_decoupled_de
 /**
  * WPGraphQL 1.3.8
  */
-if ( $vip_decoupled_options['vip_decoupled_plugin_wpgraphql'] == '1' ) {
+if ( '1' === $vip_decoupled_options['vip_decoupled_plugin_wpgraphql'] ) {
 	require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
 }
 
 /**
  * Make Gutenberg blocks available in WPGraphQL
  */
-if ( $vip_decoupled_options['vip_decoupled_plugin_blocks'] == '1' ) {
+if ( '1' === $vip_decoupled_options['vip_decoupled_plugin_blocks'] ) {
 	require_once __DIR__ . '/blocks/blocks.php';
 }
 
