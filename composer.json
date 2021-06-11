@@ -9,5 +9,8 @@
         "phpcompatibility/phpcompatibility-wp": "^2.1",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
     },
-    "license": "GPL-2.0"
+    "scripts": {
+        "test": "phpcs"
+    },
+    "license": "GPL-2.0-or-later"
 }
