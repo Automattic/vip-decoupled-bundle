@@ -10,7 +10,8 @@
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
     },
     "scripts": {
-        "test": "phpcs"
+        "test": "phpcs",
+        "phpcs-fix": "phpcbf"
     },
     "license": "GPL-2.0-or-later"
 }
