@@ -24,9 +24,10 @@ function update_resource_url( $resource_url ) {
 
 function add_filters () {
 	$filters = [
-		'canonical_feed_url',
+		'author_feed_link',
 		'category_feed_link',
 		'feed_link',
+		'post_comments_feed_link',
 		'rest_url',
 		'tag_feed_link',
 		'taxonomy_feed_link',
