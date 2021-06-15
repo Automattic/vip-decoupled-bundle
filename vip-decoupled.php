@@ -15,24 +15,24 @@
  * @package vip-bundle-decoupled
  */
 
-$vip_decoupled_default_options = array(
-	'vip_decoupled_plugin_wpgraphql' => '1',
-	'vip_decoupled_plugin_blocks'    => '1',
-);
+use function WPCOMVIP\Decoupled\Settings\is_plugin_enabled;
 
-$vip_decoupled_options = get_option( 'vip_decoupled_settings', $vip_decoupled_default_options );
+/**
+ * Enable settings
+ */
+require_once __DIR__ . '/settings/settings.php';
 
 /**
  * WPGraphQL 1.3.8
  */
-if ( '1' === $vip_decoupled_options['vip_decoupled_plugin_wpgraphql'] ) {
+if ( is_plugin_enabled( 'plugin_wpgraphql' ) ) {
 	require_once __DIR__ . '/wp-graphql-1.3.8/wp-graphql.php';
 }
 
 /**
  * Make Gutenberg blocks available in WPGraphQL
  */
-if ( '1' === $vip_decoupled_options['vip_decoupled_plugin_blocks'] ) {
+if ( is_plugin_enabled( 'plugin_blocks' ) ) {
 	require_once __DIR__ . '/blocks/blocks.php';
 }
 
@@ -44,17 +44,14 @@ require_once __DIR__ . '/cors/cors.php';
 /**
  * Enable decoupled previews
  */
-require_once __DIR__ . '/preview/preview.php';
+if ( is_plugin_enabled( 'plugin_wpgraphql' ) ) {
+	require_once __DIR__ . '/preview/preview.php';
+}
 
 /**
  * Registration helpers
  */
 require_once __DIR__ . '/registration/registration.php';
-
-/**
- * Enable settings
- */
-require_once __DIR__ . '/settings/settings.php';
 
 /**
  * Adjust resource URLs
