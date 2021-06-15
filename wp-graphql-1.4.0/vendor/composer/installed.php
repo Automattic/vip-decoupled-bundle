@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'pretty_version' => 'v1.4.0',
+        'version' => '1.4.0.0',
+        'type' => 'wordpress-plugin',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => '0d5dc5e3e35f9019080a1338a9e2f89b7afd0ded',
+        'name' => 'wp-graphql/wp-graphql',
+        'dev' => false,
+    ),
+    'versions' => array(
+        'ivome/graphql-relay-php' => array(
+            'pretty_version' => 'v0.5.0',
+            'version' => '0.5.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../ivome/graphql-relay-php',
+            'aliases' => array(),
+            'reference' => 'b227c17e79564d147db2162329f5bdbe19192313',
+            'dev_requirement' => false,
+        ),
+        'webonyx/graphql-php' => array(
+            'pretty_version' => 'v14.8.0',
+            'version' => '14.8.0.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../webonyx/graphql-php',
+            'aliases' => array(),
+            'reference' => '7149ebfb0ba4132ca3cc5ef943b8e2ece58a5d5b',
+            'dev_requirement' => false,
+        ),
+        'wp-graphql/wp-graphql' => array(
+            'pretty_version' => 'v1.4.0',
+            'version' => '1.4.0.0',
+            'type' => 'wordpress-plugin',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => '0d5dc5e3e35f9019080a1338a9e2f89b7afd0ded',
+            'dev_requirement' => false,
+        ),
+    ),
+);
