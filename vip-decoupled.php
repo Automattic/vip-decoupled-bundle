@@ -23,10 +23,10 @@ use function WPCOMVIP\Decoupled\Settings\is_plugin_enabled;
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.4.1
+ * WPGraphQL 1.4.3
  */
 if ( is_plugin_enabled( 'plugin_wpgraphql' ) ) {
-	require_once __DIR__ . '/wp-graphql-1.4.1/wp-graphql.php';
+	require_once __DIR__ . '/wp-graphql-1.4.3/wp-graphql.php';
 }
 
 /**
