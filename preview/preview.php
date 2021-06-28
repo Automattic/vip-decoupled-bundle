@@ -5,7 +5,7 @@
 
 namespace WPCOMVIP\Decoupled\Preview;
 
-require_once __DIR__ . '/preview-token.php';
+require_once __DIR__ . '/token.php';
 
 /**
  * Redirect preview requests to our decoupled frontend. Add a preview token to
@@ -22,9 +22,16 @@ function redirect_to_preview() {
 
 	if ( is_preview() || ( is_singular() && get_query_var( 'preview' ) ) ) {
 		$post          = get_queried_object();
-		$preview_token = generate_preview_token( $post->ID );
-		$preview_url   = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
+		$preview_token = generate_token( $post->ID, 'preview', 'edit_posts' );
 
+		// If the user does not have permission to generate a preview token for this
+		// post, the token will be false.
+		if ( empty( $preview_token ) ) {
+			wp_safe_redirect( home_url(), 302 );
+			exit;
+		}
+
+		$preview_url = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
 		wp_safe_redirect( $preview_url, 302 );
 		exit;
 	}
@@ -71,7 +78,7 @@ function validate_preview_request( $is_private, $model_name, $data ) {
 		return $is_private;
 	}
 
-	$token_is_valid = validate_preview_token( $token, $post_id );
+	$token_is_valid = validate_token( $token, $post_id, 'preview' );
 
 	return ! $token_is_valid;
 }
