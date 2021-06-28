@@ -29,7 +29,7 @@ function get_token_lifetime_in_seconds( $action ) {
 	 * Filter the allowed token lifetime.
 	 *
 	 * @param int    $default_lifetime Token lifetime in seconds.
-   * @param string $action           Action that will be performed with this token.
+	 * @param string $action           Action that will be performed with this token.
 	 */
 	$token_lifetime = apply_filters( 'vip_decoupled_token_lifetime', $default_lifetime, $action );
 
