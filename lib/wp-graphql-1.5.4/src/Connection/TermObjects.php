@@ -197,7 +197,8 @@ class TermObjects {
 				}
 
 				register_graphql_connection( [
-					'fromType'       => $post_type_object->graphql_single_name,
+					// PATCH: https://github.com/wp-graphql/wp-graphql/pull/2026
+					'fromType'       => 'ContentNode',
 					'toType'         => 'TermNode',
 					'fromFieldName'  => 'terms',
 					'queryClass'     => 'WP_Term_Query',
