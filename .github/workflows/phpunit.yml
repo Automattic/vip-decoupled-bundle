@@ -17,13 +17,11 @@ jobs:
         php-versions:
           - 7.4
 
-    container: php:${{ matrix.php-versions }}
-
     services:
       mariadb:
         image: mariadb:10.2
         ports:
-          - 3306
+          - 3306:3306
         env:
           MYSQL_USER: root
           MYSQL_PASSWORD: password
@@ -34,8 +32,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install Composer
-      run: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
 
     - name: Cache Composer packages
       id: composer-cache
@@ -50,7 +50,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Install WordPress tests
-      run: bash bin/install-wp-tests.sh test root password mariadb latest
+      run: bash bin/install-wp-tests.sh test root password localhost latest
 
     - name: PHPUnit
       run: composer test
