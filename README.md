@@ -40,4 +40,23 @@ that do not support Gutenberg will return a single content block with the block
 name `core/classic-editor`. You can use [`@wordpress/blocks`][blocks-npm] to
 parse this HTML client-side, if you wish.
 
+## Unit tests
+
+First, start a local environment using `wp-env`:
+
+```sh
+wp-env start
+wp-env run tests-wordpress bash
+```
+
+Run tests in the `tests-wordpress` container:
+
+```sh
+apt-get update
+apt-get install -y mariadb-client subversion
+./wp-content/plugins/vip-decoupled-bundle/bin/install-wp-tests.sh tests-wordpress root password tests-mysql latest
+cd wp-content/plugins/vip-decoupled-bundle
+./vendor/bin/phpunit
+```
+
 [blocks-npm]: https://www.npmjs.com/package/@wordpress/blocks?activeTab=readme#rawHandler

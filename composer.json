@@ -2,16 +2,18 @@
     "name": "automattic/vip-bundle-decoupled",
     "description": "A WordPress plugin bundle to support decoupled WordPress",
     "type": "wordpress-plugin",
-    "require": {
+    "require-dev": {
         "php": ">=7.0",
         "wp-coding-standards/wpcs": "^2.3",
         "automattic/vipwpcs": "^2.3",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1"
+        "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
+        "phpunit/phpunit": "^7"
     },
     "scripts": {
-        "test": "phpcs",
-        "phpcs-fix": "phpcbf"
+        "phpcs": "phpcs",
+        "phpcs-fix": "phpcbf",
+        "test": "phpunit"
     },
     "license": "GPL-2.0-or-later"
 }

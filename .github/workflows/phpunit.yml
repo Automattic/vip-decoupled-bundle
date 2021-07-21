@@ -1,0 +1,54 @@
+name: PHPUnit
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions:
+          - 7.4
+
+    env:
+      DB_DATABASE: test_db
+      DB_USER: root
+      DB_PASSWORD: root
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: ${{ matrix.php-versions }}
+
+    - name: Setup MySQL
+      run: |
+        sudo /etc/init.d/mysql start
+
+    - name: Cache Composer packages
+      id: composer-cache
+      uses: actions/cache@v2
+      with:
+        path: vendor
+        key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-php-
+
+    - name: Install dependencies
+      run: composer install --prefer-dist --no-progress
+
+    - name: Install WordPress tests
+      run: bash bin/install-wp-tests.sh ${{ env.DB_DATABASE }} ${{ env.DB_USER }} ${{ env.DB_PASSWORD }} localhost latest
+
+    - name: PHPUnit
+      run: composer test
