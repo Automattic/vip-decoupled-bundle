@@ -12,6 +12,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        php-versions:
+          - 7.4
+
+    container: php:${{ matrix.php-versions }}
+
     services:
       mariadb:
         image: mariadb:10.2
@@ -23,18 +30,9 @@ jobs:
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: password
 
-    strategy:
-      matrix:
-        php-versions:
-          - 7.4
-
     steps:
-    - uses: actions/checkout@v2
-
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-versions }}
+    - name: Checkout
+      uses: actions/checkout@v2
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
