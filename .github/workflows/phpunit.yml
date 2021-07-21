@@ -17,16 +17,10 @@ jobs:
         php-versions:
           - 7.4
 
-    services:
-      mariadb:
-        image: mariadb:10.2
-        env:
-          MYSQL_USER: root
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: test
-          MYSQL_ROOT_PASSWORD: password
-        ports:
-          - 3306/tcp
+    env:
+      DB_DATABASE: test_db
+      DB_USER: root
+      DB_PASSWORD: root
 
     steps:
     - name: Checkout
@@ -36,6 +30,11 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: ${{ matrix.php-versions }}
+
+    - name: Setup MySQL
+      run: |
+        sudo /etc/init.d/mysql start
+        mysql -e 'CREATE DATABASE ${{ env.DB_DATABASE }};' -u${{ env.DB_USER }} -p${{ env.DB_PASSWORD }}
 
     - name: Cache Composer packages
       id: composer-cache
@@ -50,7 +49,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Install WordPress tests
-      run: bash bin/install-wp-tests.sh test root password localhost:${{ job.services.mariadb.ports['3306'] }} latest
+      run: bash bin/install-wp-tests.sh ${{ env.DB_DATABASE }} ${{ env.DB_USER }} ${{ env.DB_PASSWORD }} localhost latest
 
     - name: PHPUnit
       run: composer test
