@@ -25,7 +25,6 @@ jobs:
           MYSQL_PASSWORD: password
           MYSQL_DATABASE: test
           MYSQL_ROOT_PASSWORD: password
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=10s --health-retries=10
         ports:
           - 3306/tcp
 
@@ -51,7 +50,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Install WordPress tests
-      run: bash bin/install-wp-tests.sh test root password 127.0.0.1:${{ job.services.mariadb.ports['3306'] }} latest
+      run: bash bin/install-wp-tests.sh test root password localhost:${{ job.services.mariadb.ports['3306'] }} latest
 
     - name: PHPUnit
       run: composer test
