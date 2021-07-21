@@ -1,15 +1,21 @@
-name: PHP Composer
+name: PHP CodeSniffer
 
 on:
   push:
-    branches: [ develop ]
+    branches:
+      - develop
   pull_request:
-    branches: [ develop ]
+    branches:
+      - develop
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions:
+          - 7.4
 
     steps:
     - uses: actions/checkout@v2
@@ -17,7 +23,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '7.4'
+        php-version: ${{ matrix.php-versions }}
 
     - name: Validate composer.json and composer.lock
       run: composer validate --strict
@@ -34,5 +40,5 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Lint
-      run: composer run-script test
+    - name: PHPCS
+      run: composer run-script phpcs

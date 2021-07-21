@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="VIP-Go-mu-plugins">
+<ruleset name="vip-bundle-decoupled">
 	<description>PHPCS rulesets for vip-bundle-decoupled</description>
 
 	<!-- For help in understanding this file: https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml -->
@@ -9,7 +9,7 @@
 	<file>.</file>
 
 	<!-- Subplugins - these should have their own PHPCS configurations -->
-	<exclude-pattern>wp-graphql-*/</exclude-pattern>
+	<exclude-pattern>lib/*</exclude-pattern>
 
 	<!-- Other directories -->
 	<exclude-pattern>\.git/*</exclude-pattern>
