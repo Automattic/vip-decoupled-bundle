@@ -52,7 +52,7 @@ jobs:
       run: composer install --prefer-dist --no-progress
 
     - name: Install WordPress tests
-      run: bash bin/install-wp-tests.sh test root password localhost latest
+      run: bash bin/install-wp-tests.sh test root password mariadb latest
 
     - name: PHPUnit
       run: composer test
