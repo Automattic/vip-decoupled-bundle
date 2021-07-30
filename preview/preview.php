@@ -14,12 +14,6 @@ require_once __DIR__ . '/token.php';
  * @return void
  */
 function redirect_to_preview() {
-	// If home and siteurl are the same, that indicates that the decoupled frontend
-	// is not available. Do not redirect.
-	if ( home_url() === site_url() ) {
-		return;
-	}
-
 	if ( is_preview() || ( is_singular() && get_query_var( 'preview' ) ) ) {
 		$post          = get_queried_object();
 		$preview_token = generate_token( $post->ID, 'preview', 'edit_posts' );
