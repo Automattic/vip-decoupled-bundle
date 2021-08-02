@@ -52,6 +52,13 @@ function get_setting_by_key( $key ) {
  * @return bool
  */
 function is_plugin_enabled( $plugin ) {
+	$setting = get_setting_by_key( 'enabled_plugins' );
+
+	// Handle null value.
+	if ( empty( $setting ) ) {
+		return false;
+	}
+
 	return in_array( $plugin, get_setting_by_key( 'enabled_plugins' ), true );
 }
 
@@ -80,7 +87,7 @@ function render_graphql_endpoint() {
 				value="<?php echo esc_url( site_url( $endpoint ) ); ?>"
 			/>
 			<button
-				class="button button-secondary"
+				class="button button-secondary hide-if-no-js"
 				onclick="const el = document.querySelector('#graphql_endpoint'); el.setSelectionRange(0, el.value.length); document.execCommand('Copy'); el.setSelectionRange(0, 0);"
 				style="margin-left: 10px;"
 			>
@@ -121,28 +128,25 @@ function render_form() {
 /**
  * Render a settings checkbox field.
  *
- * @param  string $name             The input name (e.g., "option_name[setting_key][]").
- * @param  string $value            The input value.
- * @param  bool   $checked          Whether the input should be checked.
- * @param  bool   $disabled         Whether the input should be disabled.
- * @param  string $label            The input label.
+ * @param  string      $name        The input name (e.g., "option_name[setting_key][]").
+ * @param  string      $value       The input value.
+ * @param  bool        $checked     Whether the input should be checked.
+ * @param  bool        $disabled    Whether the input should be disabled.
+ * @param  string      $label       The input label.
  * @param  string|null $description An optional description to render under the input.
  * @return void
  */
 function render_checkbox_field( $name, $value, $checked, $disabled, $label, $description = null ) {
 	?>
-	<label for="<?php echo esc_attr( $name ); ?>">
+	<label>
 		<input
-			type="checkbox"
 			name="<?php echo esc_attr( $name ); ?>"
+			type="checkbox"
 			value="<?php echo esc_attr( $value ); ?>"
 			<?php checked( true, $checked ); ?>
 			<?php disabled( true, $disabled ); ?>
 		/>
-		<?php echo esc_html( $label ); ?>
-		<?php if ( ! empty( $description ) ) { ?>
-		<p class="description"><?php echo esc_html( $description ); ?></p>
-		<?php } ?>
+		<strong><?php echo esc_html( $label ); ?></strong> <?php echo esc_html( $description ); ?>
 	</label>
 	<br>
 	<?php
@@ -180,14 +184,17 @@ function register_decoupled_settings() {
 			$name              = sprintf( '%s[]', $args['field_name'] );
 			$wpgraphql_enabled = is_plugin_enabled( 'wpgraphql' );
 
-			echo '<fieldset>';
+			?>
+			<fieldset><legend class="screen-reader-text"><span>Plugins</span></legend>
+			<?php
+
 			render_checkbox_field(
 				$name,
 				'wpgraphql',
 				$wpgraphql_enabled,
 				false,
 				'WPGraphQL',
-				'WPGraphQL is the API used by your decoupled frontend to query data from WordPress.'
+				'is the API used by your decoupled frontend to query data from WordPress.'
 			);
 			render_checkbox_field(
 				$name,
@@ -195,7 +202,7 @@ function register_decoupled_settings() {
 				is_plugin_enabled( 'blocks' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Content Blocks',
-				'This plugin exposes Gutenberg blocks as structured data, allowing you to map blocks to frontend components.'
+				'exposes Gutenberg blocks as structured data, allowing you to map blocks to frontend components.'
 			);
 			render_checkbox_field(
 				$name,
@@ -203,8 +210,9 @@ function register_decoupled_settings() {
 				is_plugin_enabled( 'blocks' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Preview',
-				'This plugin changes the behavior of the Preview button, so that you can preview posts on your decoupled frontend.'
+				'changes the behavior of the Preview button, so that you can preview posts on your decoupled frontend.'
 			);
+
 			?>
 			</fieldset>
 			<p><em>Additional WPGraphQL settings, including useful debugging settings, are located <a href="<?php echo esc_url( admin_url( 'admin.php?page=graphql' ) ); ?>">on their own page</a>.</em></p>
