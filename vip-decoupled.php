@@ -94,23 +94,23 @@ function render_admin_notices() {
 		</div>
 		<?php
 	}
-
-	// If schema introspection is disable, code generation will not work and the
-	// Next.js build will fail.
-	//
-	// Mirror behavior of:
-	// https://github.com/wp-graphql/wp-graphql/blob/develop/src/Server/ValidationRules/DisableIntrospection.php
-	if (
-		class_exists( '\\WPGraphQL' ) &&
-		function_exists( '\\get_graphql_setting' ) &&
-		! \WPGraphQL::debug() &&
-		'off' === get_graphql_setting( 'public_introspection_enabled', 'off' )
-	) {
-		?>
-		<div class="notice notice-error is-dismissible">
-		<p><strong>WPGraphQL public schema introspection is disabled.</strong> This feature is required to enable code generation in your decoupled frontend. Please check "Enable Public Introspection" in your <a href="<?php echo esc_url( admin_url( 'admin.php?page=graphql' ) ); ?>">WPGraphQL settings</a>. You may first need to uncheck "Enable GraphQL Debug Mode."</p>
-		</div>
-		<?php
-	}
 }
 add_action( 'admin_notices', __NAMESPACE__ . '\\render_admin_notices' );
+
+/**
+ * Force-enable schema introspection. If schema introspection is disabled, code
+ * generation and, therefore, the Next.js build will fail.
+ *
+ * @param  string $value       The current value of the setting.
+ * @param  string $default     The default value of the setting.
+ * @param  string $option_name The setting name.
+ * @return string
+ */
+function force_enable_schema_introspection( $value, $default, $option_name ) {
+	if ( 'public_introspection_enabled' === $option_name ) {
+		return 'on';
+	}
+
+	return $value;
+}
+add_filter( 'graphql_get_setting_section_field_value', __NAMESPACE__ . '\\force_enable_schema_introspection', 10, 3 );
