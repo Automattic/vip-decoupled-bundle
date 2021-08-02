@@ -70,7 +70,7 @@ function render_graphql_endpoint() {
 
 	if ( ! empty( $endpoint ) ) {
 		?>
-		<h3><label for="graphql_endpoint">Your GraphQL endpoint</label></h3>
+		<h2><label for="graphql_endpoint">Your GraphQL endpoint</label></h2>
 		<div style="display: flex; flex-direction: row;">
 			<input
 				disabled="disabled"
