@@ -68,9 +68,11 @@ if ( is_plugin_enabled( 'preview' ) && is_decoupled() ) {
 }
 
 /**
- * Registration helpers
+ * Automatic type registration
  */
-require_once __DIR__ . '/registration/registration.php';
+if ( is_plugin_enabled( 'registration' ) ) {
+	require_once __DIR__ . '/registration/registration.php';
+}
 
 /**
  * Adjust resource URLs

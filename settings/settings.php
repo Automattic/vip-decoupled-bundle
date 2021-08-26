@@ -14,7 +14,8 @@ function get_settings_config() {
 	return [
 		'cap'         => 'manage_options',
 		'defaults'    => [
-			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'preview' ],
+			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'preview', 'registration' ],
+			'allowed_origins' => [],
 		],
 		'group'       => 'VIP Decoupled',
 		'menu_slug'   => 'vip_decoupled',
@@ -43,6 +44,20 @@ function get_setting_by_key( $key ) {
 	}
 
 	return null;
+}
+
+/**
+ * Load the saved options and return the allowed origins specified by the user.
+ *
+ * @return string[]
+ */
+function get_allowed_origins() {
+	$origins = get_setting_by_key( 'allowed_origins' );
+	if ( is_array( $origins ) ) {
+		return $origins;
+	}
+
+	return [];
 }
 
 /**
@@ -77,8 +92,7 @@ function render_graphql_endpoint() {
 
 	if ( ! empty( $endpoint ) ) {
 		?>
-		<h2><label for="graphql_endpoint">Your GraphQL endpoint</label></h2>
-		<div style="display: flex; flex-direction: row;">
+		<fieldset style="display: flex; flex-direction: row; margin-bottom: 3em;">
 			<input
 				disabled="disabled"
 				id="graphql_endpoint"
@@ -88,12 +102,12 @@ function render_graphql_endpoint() {
 			/>
 			<button
 				class="button button-secondary hide-if-no-js"
-				onclick="const el = document.querySelector('#graphql_endpoint'); el.setSelectionRange(0, el.value.length); document.execCommand('Copy'); el.setSelectionRange(0, 0);"
+				onclick="const el = document.querySelector('#graphql_endpoint'); el.setSelectionRange(0, el.value.length); document.execCommand('Copy'); el.setSelectionRange(0, 0); return false;"
 				style="margin-left: 10px;"
 			>
 				Copy to clipboard
 			</button>
-		</div>
+		</fieldset>
 		<?php
 	}
 }
@@ -113,7 +127,6 @@ function render_form() {
 	?>
 	<div class="wrap">
 		<h1>VIP Decoupled Settings</h1>
-		<?php render_graphql_endpoint(); ?>
 		<form action='options.php' method='post'>
 		<?php
 			settings_fields( $config['group'] );
@@ -153,7 +166,7 @@ function render_checkbox_field( $name, $value, $checked, $disabled, $label, $des
 }
 
 /**
- * Register the VIP Decoupled settings using the WordPress Settings API.
+ * Register the VIP Decoupled settings sections using the WordPress Settings API.
  *
  * @return void
  */
@@ -162,30 +175,61 @@ function register_decoupled_settings() {
 
 	register_setting( $config['group'], $config['option_name'] );
 
-	// Register "core" settings section.
+	// Register plugin settings section.
 	add_settings_section(
-		'core',
-		null,
-		null,
+		'endpoint',
+		'Your WPGraphQL endpoint',
+		__NAMESPACE__ . '\\render_graphql_endpoint',
 		$config['menu_slug']
 	);
 
+	// Register plugin settings section.
+	add_settings_section(
+		'plugins',
+		'Plugins',
+		function() {
+			?>
+			<p>These plugins provide core decoupled functionality. Additional WPGraphQL settings, including useful debugging settings, are located <a href="<?php echo esc_url( admin_url( 'admin.php?page=graphql' ) ); ?>">on their own page</a>.</p>
+			<?php
+		},
+		$config['menu_slug']
+	);
+
+	// Register plugin settings section.
+	add_settings_section(
+		'cors',
+		'CORS',
+		null,
+		$config['menu_slug']
+	);
+}
+add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings' );
+
+/**
+ * Register the VIP Decoupled settings plugin fields.
+ *
+ * @return void
+ */
+function register_decoupled_settings_plugin_fields() {
+	$config = get_settings_config();
+
 	$option_key = 'enabled_plugins';
+	$field_name = sprintf( '%s[%s]', $config['option_name'], $option_key );
 	$args       = [
-		'field_name' => sprintf( '%s[%s]', $config['option_name'], $option_key ),
+		'field_name' => $field_name,
 		'option_key' => $option_key,
 	];
 
-	// Register "core" settings fields.
+	// Register plugin settings fields.
 	add_settings_field(
 		$option_key,
-		'Plugins',
-		function () use ( $args ) {
-			$name              = sprintf( '%s[]', $args['field_name'] );
+		'Enabled plugins',
+		function () use ( $field_name ) {
+			$name              = sprintf( '%s[]', $field_name );
 			$wpgraphql_enabled = is_plugin_enabled( 'wpgraphql' );
 
 			?>
-			<fieldset><legend class="screen-reader-text"><span>Plugins</span></legend>
+			<fieldset><legend class="screen-reader-text"><span>Enabled plugins</span></legend>
 			<?php
 
 			render_checkbox_field(
@@ -207,23 +251,104 @@ function register_decoupled_settings() {
 			render_checkbox_field(
 				$name,
 				'preview',
-				is_plugin_enabled( 'blocks' ),
+				is_plugin_enabled( 'preview' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Preview',
 				'changes the behavior of the Preview button, so that you can preview posts on your decoupled frontend.'
 			);
+			render_checkbox_field(
+				$name,
+				'registration',
+				is_plugin_enabled( 'registration' ),
+				! $wpgraphql_enabled,
+				'WPGraphQL Type Registration',
+				'automatically registers all public custom post types in WPGraphQL.'
+			);
 
 			?>
 			</fieldset>
-			<p><em>Additional WPGraphQL settings, including useful debugging settings, are located <a href="<?php echo esc_url( admin_url( 'admin.php?page=graphql' ) ); ?>">on their own page</a>.</em></p>
 			<?php
 		},
 		$config['menu_slug'],
-		'core',
+		'plugins',
 		$args
 	);
 }
-add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings' );
+add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings_plugin_fields' );
+
+/**
+ * Register the VIP Decoupled settings plugin fields.
+ *
+ * @return void
+ */
+function register_decoupled_settings_cors_fields() {
+	$config = get_settings_config();
+
+	$option_key = 'allowed_origins';
+	$field_name = sprintf( '%s[%s]', $config['option_name'], $option_key );
+	$args       = [
+		'field_name' => $field_name,
+		'option_key' => $option_key,
+	];
+
+	// Register plugin settings fields.
+	add_settings_field(
+		$option_key,
+		'Allowed origins',
+		function () use ( $field_name ) {
+			$name  = sprintf( '%s[]', $field_name );
+			$value = get_allowed_origins();
+			if ( is_array( $value ) ) {
+				$value = implode( "\n", $value );
+			}
+
+			?>
+			<fieldset><legend class="screen-reader-text"><span>Allowed origins</span></legend>
+				<textarea
+					class="large-text code"
+					cols="50"
+					id="allowed-origins"
+					name="<?php echo esc_attr( $field_name ); ?>"
+					rows="10"
+				><?php echo esc_textarea( $value ); ?></textarea>
+			</fieldset>
+			<p>Provide the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin">origins</a> of non-production environments that need to make client-side requests to WPGraphQL. Only provide origins that you control. Your frontend (<code>HOME</code>) and <code>localhost</code> (any port) are always allowed. One per line. Always include the protocol, e.g., <code>https://example.com</code>. Include the port if it is non-standard, e.g., <code>http://example.com:8888</code>.</em></p>
+			<?php
+		},
+		$config['menu_slug'],
+		'cors',
+		$args
+	);
+}
+add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings_cors_fields' );
+
+function sanitize_decoupled_settings( $value ) {
+	if ( ! empty( $value['allowed_origins'] ) ) {
+		$split_text = explode( "\n", $value['allowed_origins'] );
+		$split_text = array_map(
+			function( $origin ) {
+				$parts = wp_parse_url( trim( $origin ) );
+
+				if ( ! is_array( $parts ) ) {
+					return null;
+				}
+
+				$port = '';
+				if ( is_int( $parts['port'] ) ) {
+					$port = sprintf( ':%d', $parts['port'] );
+				}
+
+				return sprintf( '%s://%s%s', $parts['scheme'], $parts['host'], $port );
+			},
+			$split_text
+		);
+
+		$value['allowed_origins'] = array_filter( $split_text );
+	}
+
+	return $value;
+}
+add_filter( 'pre_update_option_vip_decoupled_settings', __NAMESPACE__ . '\\sanitize_decoupled_settings', 10, 1 );
 
 /**
  * Add the VIP Decoupled page to the settings menu.
