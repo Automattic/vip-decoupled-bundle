@@ -89,10 +89,16 @@ if ( is_decoupled() ) {
 function render_admin_notices() {
 	// If the home URL is the same as the site URL, then the site is not decoupled
 	// and features like preview will not work.
+	$administration_url = admin_url( 'options-general.php' );
 	if ( ! is_decoupled() ) {
+
+		if ( is_multisite() ) {
+			$administration_url = network_admin_url( 'site-settings.php?id='.get_current_blog_id() );
+		}
+
 		?>
 		<div class="notice notice-error is-dismissible">
-			<p><strong>The VIP Decoupled plugin is active but the <code>home</code> option does not point to a decoupled frontend.</strong> Previewing and other features will not work. Please set "Site Address (URL)" in <a href="<?php echo esc_url( admin_url( 'options-general.php' ) ); ?>">Settings &gt; General</a> to point to the base URL of your decoupled frontend.</p>
+			<p><strong>The VIP Decoupled plugin is active but the <code>home</code> option does not point to a decoupled frontend.</strong> Previewing and other features will not work. Please set "Site Address (URL)" in <a href="<?php echo esc_url( $administration_url ); ?>">Settings &gt; General</a> to point to the base URL of your decoupled frontend.</p>
 		</div>
 		<?php
 	}
