@@ -72,6 +72,40 @@ function parse_blocks( $post_model ) {
 				array_keys( $block['attrs'] ) 
 			);
 
+			if ( $block['blockName'] === 'core/image' ) {
+				$image_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
+
+				array_push( $attributes, [
+					'name'	=> 'src',
+					'value'	=> wp_get_attachment_url( $block['attrs'][ 'id' ] )
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'originalHeight',
+					'value'	=> $image_metadata['height']
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'originalWidth',
+					'value'	=> $image_metadata['width']
+				] );
+
+				// If width and height attributes aren't exposed, add the default ones
+				if ( ! $block['attrs']['width'] ) {
+					array_push( $attributes, [
+						'name'	=> 'height',
+						'value'	=> $image_metadata['height']
+					] );
+				}
+
+				if ( ! $block['attrs']['height'] ) {
+					array_push( $attributes, [
+						'name'	=> 'width',
+						'value'	=> $image_metadata['width']
+					] );
+				}
+			}
+
 			$tag_name   = null;
 			$inner_html = trim( $block['innerHTML'] );
 			$outer_html = $inner_html;
