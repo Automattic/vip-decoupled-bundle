@@ -91,7 +91,7 @@ function parse_blocks( $post_model ) {
 	$blocks = array_filter(
 		$blocks,
 		function( $block ) {
-			return strlen( $block['innerHTML'] ) != 0;
+			return $block['name'] != 'core/classic-editor' || $block['innerHTML'] != null;
 		} 
 	);
 
