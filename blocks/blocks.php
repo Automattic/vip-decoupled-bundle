@@ -75,22 +75,14 @@ function parse_blocks( $post_model ) {
 			$tag_name   = null;
 			$inner_html = trim( $block['innerHTML'] );
 			$outer_html = $inner_html;
-
-			// Strip wrapping tags from the content and set as a property on the block.
-			// This allows the front-end implementor to delegate tag creation to a
-			// component.
-			preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $inner_html, $matches );
-			if ( isset( $matches[1] ) ) {
-				$inner_html = $matches[3];
-				$tag_name   = $matches[1];
-			}
+			$block_matches = preg_match_html_block( $inner_html );
 
 			return [
 				'attributes' => $attributes,
-				'innerHTML'  => $inner_html,
+				'innerHTML'  => $block_matches['inner_html'],
 				'name'       => $block['blockName'],
 				'outerHTML'  => $outer_html,
-				'tagName'    => $tag_name,
+				'tagName'    => $block_matches['tag_name'],
 			];
 		},
 		$blocks 
