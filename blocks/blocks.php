@@ -125,7 +125,7 @@ function parse_blocks( $post_model ) {
 	$blocks = array_filter(
 		$blocks,
 		function( $block ) {
-			return $block['name'] != 'core/classic-editor' || $block['innerHTML'] != null;
+			return $block['name'] !== 'core/classic-editor' || $block['innerHTML'] !== null;
 		} 
 	);
 
