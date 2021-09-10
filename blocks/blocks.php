@@ -7,6 +7,31 @@ namespace WPCOMVIP\Decoupled\Blocks;
 
 use WPGraphQL;
 
+function preg_match_html_block( $block ) {
+	// Strip wrapping tags from the content and set as a property on the block.
+	// This allows the front-end implementor to delegate tag creation to a
+	// component.
+
+	preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $block, $matches );
+	
+	if ( isset( $matches[1] ) ) {
+		return [
+			'inner_html'	=> $matches[3],
+			'tag_name'		=> $matches[1]
+		];
+	}
+
+	// Self closing HTML block
+	preg_match( '#^<([A-z][A-z0-9]*)+?\b(.*?)\/>$#', $block, $self_closing_matches );
+
+	if ( isset( $self_closing_matches[1] ) ) {
+		return [
+			'inner_html'	=> null,
+			'tag_name'		=> $self_closing_matches[ 1 ]
+		];
+	}
+}	
+
 function parse_blocks( $post_model ) {
 	$version = '0.1.0';
 
