@@ -91,14 +91,14 @@ function parse_blocks( $post_model ) {
 				] );
 
 				// If width and height attributes aren't exposed, add the default ones
-				if ( ! $block['attrs']['width'] ) {
+				if ( isset( $block['attrs']['width'] ) ) {
 					array_push( $attributes, [
 						'name'	=> 'height',
 						'value'	=> $image_metadata['height']
 					] );
 				}
 
-				if ( ! $block['attrs']['height'] ) {
+				if ( isset( $block['attrs']['height'] ) ) {
 					array_push( $attributes, [
 						'name'	=> 'width',
 						'value'	=> $image_metadata['width']
