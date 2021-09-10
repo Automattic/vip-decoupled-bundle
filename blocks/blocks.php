@@ -16,8 +16,8 @@ function preg_match_html_block( $block ) {
 	
 	if ( isset( $matches[1] ) ) {
 		return [
-			'inner_html'	=> $matches[3],
-			'tag_name'		=> $matches[1]
+			'inner_html' => $matches[3],
+			'tag_name'   => $matches[1],
 		];
 	}
 
@@ -26,8 +26,8 @@ function preg_match_html_block( $block ) {
 
 	if ( isset( $self_closing_matches[1] ) ) {
 		return [
-			'inner_html'	=> null,
-			'tag_name'		=> $self_closing_matches[ 1 ]
+			'inner_html' => null,
+			'tag_name'   => $self_closing_matches[ 1 ],
 		];
 	}
 }	
