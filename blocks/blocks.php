@@ -7,6 +7,31 @@ namespace WPCOMVIP\Decoupled\Blocks;
 
 use WPGraphQL;
 
+function preg_match_html_block( $block ) {
+	// Strip wrapping tags from the content and set as a property on the block.
+	// This allows the front-end implementor to delegate tag creation to a
+	// component.
+
+	preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $block, $matches );
+	
+	if ( isset( $matches[1] ) ) {
+		return [
+			'inner_html' => $matches[3],
+			'tag_name'   => $matches[1],
+		];
+	}
+
+	// Self closing HTML block
+	preg_match( '#^<([A-z][A-z0-9]*)+?\b(.*?)\/>$#', $block, $self_closing_matches );
+
+	if ( isset( $self_closing_matches[1] ) ) {
+		return [
+			'inner_html' => null,
+			'tag_name'   => $self_closing_matches[ 1 ],
+		];
+	}
+}	
+
 function parse_blocks( $post_model ) {
 	$version = '0.1.0';
 
@@ -47,25 +72,51 @@ function parse_blocks( $post_model ) {
 				array_keys( $block['attrs'] ) 
 			);
 
+			if ( $block['blockName'] === 'core/image' ) {
+				$image_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
+
+				array_push( $attributes, [
+					'name'	=> 'src',
+					'value'	=> wp_get_attachment_url( $block['attrs'][ 'id' ] )
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'originalHeight',
+					'value'	=> $image_metadata['height']
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'originalWidth',
+					'value'	=> $image_metadata['width']
+				] );
+
+				// If width and height attributes aren't exposed, add the default ones
+				if ( isset( $block['attrs']['width'] ) ) {
+					array_push( $attributes, [
+						'name'	=> 'height',
+						'value'	=> $image_metadata['height']
+					] );
+				}
+
+				if ( isset( $block['attrs']['height'] ) ) {
+					array_push( $attributes, [
+						'name'	=> 'width',
+						'value'	=> $image_metadata['width']
+					] );
+				}
+			}
+
 			$tag_name   = null;
 			$inner_html = trim( $block['innerHTML'] );
 			$outer_html = $inner_html;
-
-			// Strip wrapping tags from the content and set as a property on the block.
-			// This allows the front-end implementor to delegate tag creation to a
-			// component.
-			preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $inner_html, $matches );
-			if ( isset( $matches[1] ) ) {
-				$inner_html = $matches[3];
-				$tag_name   = $matches[1];
-			}
+			$block_matches = preg_match_html_block( $inner_html );
 
 			return [
 				'attributes' => $attributes,
-				'innerHTML'  => $inner_html,
+				'innerHTML'  => $block_matches['inner_html'],
 				'name'       => $block['blockName'],
 				'outerHTML'  => $outer_html,
-				'tagName'    => $tag_name,
+				'tagName'    => $block_matches['tag_name'],
 			];
 		},
 		$blocks 
@@ -74,7 +125,7 @@ function parse_blocks( $post_model ) {
 	$blocks = array_filter(
 		$blocks,
 		function( $block ) {
-			return strlen( $block['innerHTML'] ) != 0;
+			return $block['name'] !== 'core/classic-editor' || $block['innerHTML'] !== null;
 		} 
 	);
 
