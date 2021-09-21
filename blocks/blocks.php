@@ -73,7 +73,7 @@ function parse_blocks( $post_model ) {
 			);
 
 			if ( $block['blockName'] === 'core/image' ) {
-				$image_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
+				$attachment_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
 
 				array_push( $attributes, [
 					'name'	=> 'src',
@@ -82,26 +82,26 @@ function parse_blocks( $post_model ) {
 
 				array_push( $attributes, [
 					'name'	=> 'originalHeight',
-					'value'	=> $image_metadata['height']
+					'value'	=> $attachment_metadata['height']
 				] );
 
 				array_push( $attributes, [
 					'name'	=> 'originalWidth',
-					'value'	=> $image_metadata['width']
+					'value'	=> $attachment_metadata['width']
 				] );
 
 				// If width and height attributes aren't exposed, add the default ones
 				if ( isset( $block['attrs']['width'] ) ) {
 					array_push( $attributes, [
 						'name'	=> 'height',
-						'value'	=> $image_metadata['height']
+						'value'	=> $attachment_metadata['height']
 					] );
 				}
 
 				if ( isset( $block['attrs']['height'] ) ) {
 					array_push( $attributes, [
 						'name'	=> 'width',
-						'value'	=> $image_metadata['width']
+						'value'	=> $attachment_metadata['width']
 					] );
 				}
 			}
