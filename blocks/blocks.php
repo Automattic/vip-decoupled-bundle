@@ -74,6 +74,7 @@ function parse_blocks( $post_model ) {
 
 			if ( $block['blockName'] === 'core/image' ) {
 				$attachment_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
+				$image_metadata = wp_get_attachment_image( $block['attrs'][ 'id' ] );
 
 				array_push( $attributes, [
 					'name'	=> 'src',
@@ -88,6 +89,16 @@ function parse_blocks( $post_model ) {
 				array_push( $attributes, [
 					'name'	=> 'originalWidth',
 					'value'	=> $attachment_metadata['width']
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'srcset',
+					'value'	=> wp_get_attachment_image_srcset( $block['attrs'][ 'id' ] )
+				] );
+
+				array_push( $attributes, [
+					'name'	=> 'alt',
+					'value'	=> trim( strip_tags( get_post_meta( $block['attrs'][ 'id' ], '_wp_attachment_image_alt', true ) ) )
 				] );
 
 				// If width and height attributes aren't exposed, add the default ones
