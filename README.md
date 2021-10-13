@@ -9,7 +9,7 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
-## Setting your `HOME`
+## Setting your `WP_HOME`
 
 WordPress needs to know the address of your frontend so that it can point permalinks, feed links, and other URLs to the correct destination. WordPress uses the `WP_HOME` setting for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
 
