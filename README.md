@@ -9,15 +9,17 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
-## Setting your `HOME`
+## Setting your `WP_HOME`
 
-WordPress needs to know the address of your frontend so that it can point permalinks, feed links, and other URLs to the correct destination. WordPress uses the `HOME` setting for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
+WordPress needs to know the address of your frontend so that it can point permalinks, feed links, and other URLs to the correct destination. WordPress uses the `WP_HOME` setting for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
 
 You can make this change in the Dashboard at Settings > General > Site Address (URL). Alternatively, you can define this constant in your `wp-config.php` or [`vip-config.php` on VIP][vip-config]:
 
 ```php
-define( 'HOME', 'https://my-decoupled-frontend.example.com' );
+define( 'WP_HOME', 'https://my-decoupled-frontend.example.com' );
 ```
+
+See [WordPress documentation for other options](https://wordpress.org/support/article/changing-the-site-url/#changing-the-site-url).
 
 That's all the configuration that's needed to support your decoupled frontend. If you are using VIP's Next.js boilerplate, [head over to the README][nextjs-boilerplate] to get your frontend up and running.
 
