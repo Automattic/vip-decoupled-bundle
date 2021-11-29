@@ -61,6 +61,11 @@ if ( is_plugin_enabled( 'blocks' ) ) {
 require_once __DIR__ . '/cors/cors.php';
 
 /**
+ * Parse.ly
+ */
+require_once __DIR__ . '/parsely/parsely.php';
+
+/**
  * Enable decoupled previews
  */
 if ( is_plugin_enabled( 'preview' ) && is_decoupled() ) {
