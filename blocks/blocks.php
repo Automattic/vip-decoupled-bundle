@@ -5,35 +5,14 @@
 
 namespace WPCOMVIP\Decoupled\Blocks;
 
-use WPGraphQL;
-
-function preg_match_html_block( $block ) {
-	// Strip wrapping tags from the content and set as a property on the block.
-	// This allows the front-end implementor to delegate tag creation to a
-	// component.
-
-	preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $block, $matches );
-	
-	if ( isset( $matches[1] ) ) {
-		return [
-			'inner_html' => $matches[3],
-			'tag_name'   => $matches[1],
-		];
-	}
-
-	// Self closing HTML block
-	preg_match( '#^<([A-z][A-z0-9]*)+?\b(.*?)\/>$#', $block, $self_closing_matches );
-
-	if ( isset( $self_closing_matches[1] ) ) {
-		return [
-			'inner_html' => null,
-			'tag_name'   => $self_closing_matches[ 1 ],
-		];
-	}
-}	
-
-function parse_blocks( $post_model ) {
-	$version = '0.1.0';
+/**
+ * Extract the content blocks and associated meta for a post.
+ *
+ * @param  WPGraphQL\Model\Post $post_model Post model for post.
+ * @return array
+ */
+function get_content_blocks( $post_model ) {
+	$version = '0.2.0';
 
 	if ( ! function_exists( 'parse_blocks' ) || ! function_exists( 'has_blocks' ) ) {
 		return [
@@ -47,11 +26,97 @@ function parse_blocks( $post_model ) {
 	// based on "edit_posts" cap. Since we want to serve blocks even to logged-out
 	// users -- and because we are parsing this content before returning it --
 	// we'll bypass the model and access the raw content directly.
-	$post = get_post( $post_model->ID );
+	$post = \get_post( $post_model->ID );
 
 	$is_gutenberg = \has_blocks( $post->post_content );
-	$blocks       = \parse_blocks( $post->post_content );
+	$raw_blocks   = \parse_blocks( $post->post_content );
 
+	return [
+		'blocks'      => process_content_blocks( $raw_blocks ),
+		'isGutenberg' => $is_gutenberg,
+		'version'     => $version,
+	];
+}
+
+/**
+ * Map the Gutenberg block attributes to the shape of BlockAttribute.
+ *
+ * @param  array $block Content block.
+ * @return array
+ */
+function get_content_block_attributes( $block ) {
+	if ( 'core/image' === $block['blockName'] ) {
+		$attachment_metadata = \wp_get_attachment_metadata( $block['attrs']['id'] );
+
+		$block['attrs']['src']            = \wp_get_attachment_url( $block['attrs']['id'] );
+		$block['attrs']['originalHeight'] = $attachment_metadata['height'];
+		$block['attrs']['originalWidth']  = $attachment_metadata['width'];
+		$block['attrs']['srcset']         = \wp_get_attachment_image_srcset( $block['attrs']['id'] );
+		$block['attrs']['alt']            = trim( strip_tags( \get_post_meta( $block['attrs']['id'], '_wp_attachment_image_alt', true ) ) );
+
+		// If width and height attributes aren't exposed, add the default ones
+		if ( ! isset( $block['attrs']['height'] ) ) {
+			$block['attrs']['height'] = $attachment_metadata['height'];
+		}
+
+		if ( ! isset( $block['attrs']['width'] ) ) {
+			$block['attrs']['width'] = $attachment_metadata['width'];
+		}
+	}
+
+	return array_map(
+		function ( $key ) use ( $block ) {
+			return [
+				'name'  => $key,
+				'value' => $block['attrs'][ $key ],
+			];
+		},
+		array_keys( $block['attrs'] )
+	);
+}
+
+/**
+ * Strip wrapping tags from the content and set as a property on the block. This
+ * allows the front-end implementor to delegate tag creation to a component.
+ *
+ * @param  string $html Inner HTML of block.
+ * @return array
+ */
+function get_content_block_html( $html ) {
+	$html = trim( $html );
+
+	preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $html, $matches );
+
+	if ( isset( $matches[1] ) ) {
+		return [
+			'innerHTML' => $matches[3],
+			'outerHTML' => $html,
+			'tagName'   => $matches[1],
+		];
+	}
+
+	// Self closing HTML block
+	preg_match( '#^<([A-z][A-z0-9]*)+?\b(.*?)\/>$#', $html, $self_closing_matches );
+
+	if ( isset( $self_closing_matches[1] ) ) {
+		return [
+			'innerHTML' => null,
+			'outerHTML' => sprintf( '<%s />', $self_closing_matches[1] ),
+			'tagName'   => $self_closing_matches[1],
+		];
+	}
+
+	return [];
+}
+
+/**
+ * Process content blocks to match expected shape of ContentBlock type and
+ * remove unwanted data.
+ *
+ * @param  array $raw_blocks The raw blocks returned by parse_blocks.
+ * @return array
+ */
+function process_content_blocks( $raw_blocks ) {
 	$blocks = array_map(
 		function ( $block ) {
 			// Classic editor blocks get a blockName of null with the raw post content
@@ -61,94 +126,34 @@ function parse_blocks( $post_model ) {
 				$block['blockName'] = 'core/classic-editor';
 			}
 
-			// Map the block attributes to the shape of BlockAttribute.
-			$attributes = array_map(
-				function ( $key ) use ( $block ) {
-					return [
-						'name'  => $key,
-						'value' => $block['attrs'][ $key ],
-					];
-				},
-				array_keys( $block['attrs'] ) 
-			);
-
-			if ( $block['blockName'] === 'core/image' ) {
-				$attachment_metadata = wp_get_attachment_metadata( $block['attrs'][ 'id' ] );
-				$image_metadata = wp_get_attachment_image( $block['attrs'][ 'id' ] );
-
-				array_push( $attributes, [
-					'name'	=> 'src',
-					'value'	=> wp_get_attachment_url( $block['attrs'][ 'id' ] )
-				] );
-
-				array_push( $attributes, [
-					'name'	=> 'originalHeight',
-					'value'	=> $attachment_metadata['height']
-				] );
-
-				array_push( $attributes, [
-					'name'	=> 'originalWidth',
-					'value'	=> $attachment_metadata['width']
-				] );
-
-				array_push( $attributes, [
-					'name'	=> 'srcset',
-					'value'	=> wp_get_attachment_image_srcset( $block['attrs'][ 'id' ] )
-				] );
-
-				array_push( $attributes, [
-					'name'	=> 'alt',
-					'value'	=> trim( strip_tags( get_post_meta( $block['attrs'][ 'id' ], '_wp_attachment_image_alt', true ) ) )
-				] );
-
-				// If width and height attributes aren't exposed, add the default ones
-				if ( isset( $block['attrs']['width'] ) ) {
-					array_push( $attributes, [
-						'name'	=> 'height',
-						'value'	=> $attachment_metadata['height']
-					] );
-				}
-
-				if ( isset( $block['attrs']['height'] ) ) {
-					array_push( $attributes, [
-						'name'	=> 'width',
-						'value'	=> $attachment_metadata['width']
-					] );
-				}
+			// However, Gutenberg can sometimes produce spurious empty blocks. Return
+			// null and filter them out below.
+			if ( 'core/classic-editor' === $block['blockName'] && empty( trim( $block['innerHTML'] ) ) ) {
+				return null;
 			}
 
-			$tag_name   = null;
-			$inner_html = trim( $block['innerHTML'] );
-			$outer_html = $inner_html;
-			$block_matches = preg_match_html_block( $inner_html );
-
-			return [
-				'attributes' => $attributes,
-				'innerHTML'  => $block_matches['inner_html'],
-				'name'       => $block['blockName'],
-				'outerHTML'  => $outer_html,
-				'tagName'    => $block_matches['tag_name'],
-			];
+			return array_merge(
+				get_content_block_html( $block['innerHTML'] ),
+				[
+					'attributes'  => get_content_block_attributes( $block ),
+					'innerBlocks' => process_content_blocks( $block['innerBlocks'] ),
+					'name'        => $block['blockName'],
+				]
+			);
 		},
-		$blocks 
+		$raw_blocks
 	);
 
-	$blocks = array_filter(
-		$blocks,
-		function( $block ) {
-			return $block['name'] !== 'core/classic-editor' || $block['innerHTML'] !== null;
-		} 
-	);
-
-	return [
-		'blocks'      => $blocks,
-		'isGutenberg' => $is_gutenberg,
-		'version'     => $version,
-	];
+	return array_filter( $blocks );
 }
 
+/**
+ * Register types and fields for content blocks.
+ *
+ * @return void
+ */
 function register_types() {
-	register_graphql_object_type(
+	\register_graphql_object_type(
 		'ContentBlockAttribute',
 		[
 			'description' => 'Content block attribute',
@@ -165,28 +170,32 @@ function register_types() {
 		],
 	);
 
-	register_graphql_object_type(
+	\register_graphql_object_type(
 		'ContentBlock',
 		[
 			'description' => 'Content block',
 			'fields'      => [
-				'attributes' => [
+				'attributes'  => [
 					'type'        => [ 'list_of' => 'ContentBlockAttribute' ],
 					'description' => 'Content block attributes',
 				],
-				'innerHTML'  => [
+				'innerBlocks' => [
+					'type'        => [ 'list_of' => 'ContentBlock' ],
+					'description' => 'Inner blocks of this block',
+				],
+				'innerHTML'   => [
 					'type'        => 'String',
 					'description' => 'Content block inner HTML (without wrapping tag)',
 				],
-				'name'       => [
+				'name'        => [
 					'type'        => 'String',
 					'description' => 'Content block name',
 				],
-				'outerHTML'  => [
+				'outerHTML'   => [
 					'type'        => 'String',
 					'description' => 'Content block HTML (with wrapping tag)',
 				],
-				'tagName'    => [
+				'tagName'     => [
 					'type'        => 'String',
 					'description' => 'Content block HTML wrapping tag name',
 				],
@@ -194,7 +203,7 @@ function register_types() {
 		],
 	);
 
-	register_graphql_object_type(
+	\register_graphql_object_type(
 		'ContentBlocks',
 		[
 			'description' => 'Content block',
@@ -216,14 +225,14 @@ function register_types() {
 	);
 
 	// Register the field on every post type that supports 'editor'.
-	register_graphql_field(
+	\register_graphql_field(
 		'NodeWithContentEditor',
 		'contentBlocks',
 		[
 			'type'        => 'ContentBlocks',
 			'description' => 'A block representation of post content',
-			'resolve'     => __NAMESPACE__ . '\\parse_blocks',
+			'resolve'     => __NAMESPACE__ . '\\get_content_blocks',
 		]
 	);
 }
-add_action( 'graphql_register_types', __NAMESPACE__ . '\\register_types', 10, 0 );
+\add_action( 'graphql_register_types', __NAMESPACE__ . '\\register_types', 10, 0 );
