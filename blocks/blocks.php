@@ -135,9 +135,10 @@ function process_content_blocks( $raw_blocks ) {
 			return array_merge(
 				get_content_block_html( $block['innerHTML'] ),
 				[
-					'attributes'  => get_content_block_attributes( $block ),
-					'innerBlocks' => process_content_blocks( $block['innerBlocks'] ),
-					'name'        => $block['blockName'],
+					'attributes'   => get_content_block_attributes( $block ),
+					'innerBlocks'  => process_content_blocks( $block['innerBlocks'] ),
+					'innerContent' => $block['innerContent'],
+					'name'         => $block['blockName'],
 				]
 			);
 		},
@@ -182,6 +183,10 @@ function register_types() {
 				'innerBlocks' => [
 					'type'        => [ 'list_of' => 'ContentBlock' ],
 					'description' => 'Inner blocks of this block',
+				],
+				'innerContent' => [
+					'type'        => [ 'list_of' => 'String' ],
+					'description' => 'List of string fragments and null markers where inner blocks were found',
 				],
 				'innerHTML'   => [
 					'type'        => 'String',
