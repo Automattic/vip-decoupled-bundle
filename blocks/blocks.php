@@ -6,13 +6,22 @@
 namespace WPCOMVIP\Decoupled\Blocks;
 
 /**
+ * The semver of the ContentBlock data type.
+ *
+ * @return string Version number.
+ */
+function get_block_version() {
+	return '0.2.0';
+}
+
+/**
  * Extract the content blocks and associated meta for a post.
  *
  * @param  WPGraphQL\Model\Post $post_model Post model for post.
  * @return array
  */
 function get_content_blocks( $post_model ) {
-	$version = '0.2.0';
+	$version = get_block_version();
 
 	if ( ! function_exists( 'parse_blocks' ) || ! function_exists( 'has_blocks' ) ) {
 		return [
@@ -39,41 +48,34 @@ function get_content_blocks( $post_model ) {
 }
 
 /**
- * Map the Gutenberg block attributes to the shape of BlockAttribute.
+ * Provide additional data for image blocks.
  *
  * @param  array $block Content block.
  * @return array
  */
-function get_content_block_attributes( $block ) {
-	if ( 'core/image' === $block['blockName'] ) {
-		$attachment_metadata = \wp_get_attachment_metadata( $block['attrs']['id'] );
+function transform_block_attributes( $block ) {
+	if ( 'core/image' === $block['name'] ) {
+		$attachment_metadata = \wp_get_attachment_metadata( $block['attributes']['id'] );
 
-		$block['attrs']['src']            = \wp_get_attachment_url( $block['attrs']['id'] );
-		$block['attrs']['originalHeight'] = $attachment_metadata['height'];
-		$block['attrs']['originalWidth']  = $attachment_metadata['width'];
-		$block['attrs']['srcset']         = \wp_get_attachment_image_srcset( $block['attrs']['id'] );
-		$block['attrs']['alt']            = trim( strip_tags( \get_post_meta( $block['attrs']['id'], '_wp_attachment_image_alt', true ) ) );
+		$block['attributes']['src']            = \wp_get_attachment_url( $block['attributes']['id'] );
+		$block['attributes']['originalHeight'] = $attachment_metadata['height'];
+		$block['attributes']['originalWidth']  = $attachment_metadata['width'];
+		$block['attributes']['srcset']         = \wp_get_attachment_image_srcset( $block['attributes']['id'] );
+		$block['attributes']['alt']            = trim( strip_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
 
 		// If width and height attributes aren't exposed, add the default ones
-		if ( ! isset( $block['attrs']['height'] ) ) {
-			$block['attrs']['height'] = $attachment_metadata['height'];
+		if ( ! isset( $block['attributes']['height'] ) ) {
+			$block['attributes']['height'] = $attachment_metadata['height'];
 		}
 
-		if ( ! isset( $block['attrs']['width'] ) ) {
-			$block['attrs']['width'] = $attachment_metadata['width'];
+		if ( ! isset( $block['attributes']['width'] ) ) {
+			$block['attributes']['width'] = $attachment_metadata['width'];
 		}
 	}
 
-	return array_map(
-		function ( $key ) use ( $block ) {
-			return [
-				'name'  => $key,
-				'value' => $block['attrs'][ $key ],
-			];
-		},
-		array_keys( $block['attrs'] )
-	);
+	return $block;
 }
+add_filter( 'vip_decoupled_graphql_content_block', __NAMESPACE__ . '\\transform_block_attributes', 10, 1 );
 
 /**
  * Strip wrapping tags from the content and set as a property on the block. This
@@ -118,7 +120,9 @@ function get_content_block_html( $html ) {
  */
 function process_content_blocks( $raw_blocks ) {
 	$blocks = array_map(
-		function ( $block ) {
+		function ( $raw_block ) {
+			$block = $raw_block;
+
 			// Classic editor blocks get a blockName of null with the raw post content
 			// shoved inside. Set a usable block name and allow the client to use the
 			// HTML as they see fit.
@@ -132,15 +136,38 @@ function process_content_blocks( $raw_blocks ) {
 				return null;
 			}
 
-			return array_merge(
+			$block = array_merge(
 				get_content_block_html( $block['innerHTML'] ),
 				[
-					'attributes'   => get_content_block_attributes( $block ),
+					'attributes'   => $block['attrs'],
 					'innerBlocks'  => process_content_blocks( $block['innerBlocks'] ),
 					'innerContent' => $block['innerContent'],
 					'name'         => $block['blockName'],
 				]
 			);
+
+			/**
+			 * Filter content block before it is provided to the GraphQL resolver.
+			 *
+			 * @param  $block     ContentBlock data.
+			 * @param  $raw_block "Raw" block data from parse_blocks().
+			 * @param  $version   Block version.
+			 */
+			$block = \apply_filters( 'vip_decoupled_graphql_content_block', $block, $raw_block, get_block_version() );
+
+			// Attributes are much easier to work with as an associative array, but
+			// must be provided to the GraphQL resolver as an array of key/value pairs.
+			$block['attributes'] = array_map(
+				function ( $key ) use ( $block ) {
+					return [
+						'name'  => $key,
+						'value' => $block['attributes'][ $key ],
+					];
+				},
+				array_keys( $block['attributes'] )
+			);
+
+			return $block;
 		},
 		$raw_blocks
 	);
