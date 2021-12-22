@@ -78,10 +78,11 @@ function transform_block_attributes( $block ) {
 \add_filter( 'vip_decoupled_graphql_content_block', __NAMESPACE__ . '\\transform_block_attributes', 10, 1 );
 
 /**
- * Provide the inner HTML in several different formats. The block resolver will
- * choose the most appropriate based on field arguments. Also provide the
- * wrapping tag name, which can allow the front-end implementor to delegate tag
- * creation to a component.
+ * Parse the inner HTML and provide a version with the wrapping tag pulled out
+ * into a seperate tagName property. The block resolver will deliver either the
+ * original or the "unwrapped" version based on the passed field arguments. The
+ * wrapping tag name allows the front-end implementor to delegate tag creation
+ * to a component.
  *
  * @param  string $html Inner HTML of block.
  * @return array
