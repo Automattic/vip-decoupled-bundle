@@ -75,40 +75,50 @@ function transform_block_attributes( $block ) {
 
 	return $block;
 }
-add_filter( 'vip_decoupled_graphql_content_block', __NAMESPACE__ . '\\transform_block_attributes', 10, 1 );
+\add_filter( 'vip_decoupled_graphql_content_block', __NAMESPACE__ . '\\transform_block_attributes', 10, 1 );
 
 /**
- * Strip wrapping tags from the content and set as a property on the block. This
- * allows the front-end implementor to delegate tag creation to a component.
+ * Provide the inner HTML in several different formats. The block resolver will
+ * choose the most appropriate based on field arguments. Also provide the
+ * wrapping tag name, which can allow the front-end implementor to delegate tag
+ * creation to a component.
  *
  * @param  string $html Inner HTML of block.
  * @return array
  */
-function get_content_block_html( $html ) {
-	$html = trim( $html );
+function parse_inner_html( $html ) {
+	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#';
+	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#';
+	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#';
 
-	preg_match( '#^<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>$#', $html, $matches );
+	if ( preg_match( $wrapping_tag_pattern, $html, $matches ) ) {
+		// Check for orphaned tag that would indicate that we should not have
+		// stripped the top-level wrapping tag. Example:
+		// <div>1</div><div>2</div>
+		if ( 1 === preg_match( $orphaned_tag_pattern, $matches[3] ) ) {
+			return [
+				'innerHTMLUnwrapped' => null,
+				'tagName'            => null,
+			];
+		}
 
-	if ( isset( $matches[1] ) ) {
 		return [
-			'innerHTML' => $matches[3],
-			'outerHTML' => $html,
-			'tagName'   => $matches[1],
+			'innerHTMLUnwrapped' => $matches[3],
+			'tagName'            => $matches[1],
 		];
 	}
 
-	// Self closing HTML block
-	preg_match( '#^<([A-z][A-z0-9]*)+?\b(.*?)\/>$#', $html, $self_closing_matches );
-
-	if ( isset( $self_closing_matches[1] ) ) {
+	if ( preg_match( $self_closing_pattern, $html, $self_closing_matches ) ) {
 		return [
-			'innerHTML' => null,
-			'outerHTML' => sprintf( '<%s />', $self_closing_matches[1] ),
-			'tagName'   => $self_closing_matches[1],
+			'innerHTMLUnwrapped' => null,
+			'tagName'            => $self_closing_matches[1],
 		];
 	}
 
-	return [];
+	return [
+		'innerHTMLUnwrapped' => null,
+		'tagName'            => null,
+	];
 }
 
 /**
@@ -137,7 +147,7 @@ function process_content_blocks( $raw_blocks ) {
 			}
 
 			$block = array_merge(
-				get_content_block_html( $block['innerHTML'] ),
+				parse_inner_html( $block['innerHTML'] ),
 				[
 					'attributes'   => $block['attrs'],
 					'innerBlocks'  => process_content_blocks( $block['innerBlocks'] ),
@@ -159,9 +169,14 @@ function process_content_blocks( $raw_blocks ) {
 			// must be provided to the GraphQL resolver as an array of key/value pairs.
 			$block['attributes'] = array_map(
 				function ( $key ) use ( $block ) {
+					$value = $block['attributes'][ $key ];
+					if ( ! is_string( $value ) ) {
+						$value = \wp_json_encode( $value );
+					}
+
 					return [
 						'name'  => $key,
-						'value' => $block['attributes'][ $key ],
+						'value' => $value,
 					];
 				},
 				array_keys( $block['attributes'] )
@@ -203,11 +218,11 @@ function register_types() {
 		[
 			'description' => 'Content block',
 			'fields'      => [
-				'attributes'  => [
+				'attributes'   => [
 					'type'        => [ 'list_of' => 'ContentBlockAttribute' ],
 					'description' => 'Content block attributes',
 				],
-				'innerBlocks' => [
+				'innerBlocks'  => [
 					'type'        => [ 'list_of' => 'ContentBlock' ],
 					'description' => 'Inner blocks of this block',
 				],
@@ -215,19 +230,33 @@ function register_types() {
 					'type'        => [ 'list_of' => 'String' ],
 					'description' => 'List of string fragments and null markers where inner blocks were found',
 				],
-				'innerHTML'   => [
+				'innerHTML'    => [
+					'args'        => [
+						'removeWrappingTag' => [
+							'type'        => 'Boolean',
+							'description' => 'Remove wrapping tag from innerHTML, if possible. Default: false',
+						],
+					],
 					'type'        => 'String',
 					'description' => 'Content block inner HTML (without wrapping tag)',
+					'resolve'     => function ( $block, $args ) {
+						if ( isset( $args['removeWrappingTag'] ) && true === $args['removeWrappingTag'] ) {
+							return $block['innerHTMLUnwrapped'];
+						}
+
+						return $block['innerHTML'];
+					},
 				],
-				'name'        => [
+				'name'         => [
 					'type'        => 'String',
 					'description' => 'Content block name',
 				],
-				'outerHTML'   => [
-					'type'        => 'String',
-					'description' => 'Content block HTML (with wrapping tag)',
+				'outerHTML'    => [
+					'type'              => 'String',
+					'deprecationReason' => 'Deprecated in favor of consolidating HTML output in innerHTML using field directives to control whether the wrapping tag is included',
+					'description'       => 'Content block HTML (with wrapping tag)',
 				],
-				'tagName'     => [
+				'tagName'      => [
 					'type'        => 'String',
 					'description' => 'Content block HTML wrapping tag name',
 				],
