@@ -155,6 +155,7 @@ function process_content_blocks( $raw_blocks ) {
 					'innerContent' => $block['innerContent'],
 					'innerHTML'    => $block['innerHTML'],
 					'name'         => $block['blockName'],
+					'outerHTML'    => $block['innerHTML'],
 				]
 			);
 
