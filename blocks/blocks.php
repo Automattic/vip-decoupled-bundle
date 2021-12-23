@@ -153,6 +153,7 @@ function process_content_blocks( $raw_blocks ) {
 					'attributes'   => $block['attrs'],
 					'innerBlocks'  => process_content_blocks( $block['innerBlocks'] ),
 					'innerContent' => $block['innerContent'],
+					'innerHTML'    => $block['innerHTML'],
 					'name'         => $block['blockName'],
 				]
 			);
