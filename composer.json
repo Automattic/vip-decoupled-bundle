@@ -16,5 +16,10 @@
         "phpcs-fix": "phpcbf",
         "test": "phpunit"
     },
-    "license": "GPL-2.0-or-later"
+    "license": "GPL-2.0-or-later",
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    }
 }
