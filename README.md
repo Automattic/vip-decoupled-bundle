@@ -68,26 +68,27 @@ See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use a
 
 This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
 
-This plugin currently only works with our Next.js boilerplate and should be disabled if you are not using it.
+This plugin currently only works with our Next.js boilerplate and should be disabled if you are not using it. 
 
 ## Running unit tests
 
-First, start a local environment using `wp-env`:
+### Pre-requisites
+
+In order to run the unit tests, you will need the following:
+
+- [Docker](https://www.docker.com/get-started)
+- [Composer](https://getcomposer.org/download/)
+- [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/)
+- PHP <= 7.4
+
+### Commands to run the tests
+
+Run the following in order to install the right php packages, start a local wordpress environment and run the tests against it:
 
 ```sh
 composer install
 wp-env start
-wp-env run tests-wordpress bash
-```
-
-Run tests in the `tests-wordpress` container:
-
-```sh
-apt-get update
-apt-get install -y mariadb-client subversion
-./wp-content/plugins/vip-decoupled-bundle/bin/install-wp-tests.sh tests-wordpress root password tests-mysql latest
-cd wp-content/plugins/vip-decoupled-bundle
-./vendor/bin/phpunit
+wp-env run tests-wordpress ./wp-content/plugins/vip-decoupled-bundle/bin/run-tests.sh
 ```
 
 [graphql]: https://graphql.org
