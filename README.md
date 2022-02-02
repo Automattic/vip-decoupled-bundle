@@ -75,6 +75,7 @@ This plugin currently only works with our Next.js boilerplate and should be disa
 First, start a local environment using `wp-env`:
 
 ```sh
+composer install
 wp-env start
 wp-env run tests-wordpress bash
 ```
