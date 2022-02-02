@@ -88,8 +88,19 @@ Run the following in order to install the right php packages, start a local word
 ```sh
 composer install
 wp-env start
-wp-env run tests-wordpress ./wp-content/plugins/vip-decoupled-bundle/bin/run-tests.sh
+composer test-local
 ```
+
+### Troubleshooting
+
+In the event that you are facing any docker container problems, the following should likely be helpful in re-creating those docker containers:
+
+```sh
+wp-env destroy
+docker volume prune
+```
+
+It's also helpful to delete all the images pertaining to what was destroyed above.
 
 [graphql]: https://graphql.org
 [nextjs-boilerplate]: https://github.com/Automattic/vip-go-nextjs-skeleton

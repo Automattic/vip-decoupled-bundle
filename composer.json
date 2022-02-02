@@ -15,7 +15,8 @@
     "scripts": {
         "phpcs": "phpcs",
         "phpcs-fix": "phpcbf",
-        "test": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/vip-decoupled-bundle/phpunit.xml.dist --verbose'"
+        "test": "phpunit",
+        "test-local": "wp-env run phpunit 'phpunit -c /var/www/html/wp-content/plugins/vip-decoupled-bundle/phpunit.xml.dist'"
     },
     "license": "GPL-2.0-or-later",
     "config": {
