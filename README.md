@@ -93,7 +93,7 @@ composer test-local
 
 ### Troubleshooting
 
-In the event that you are facing any docker container problems, the following should likely be helpful in re-creating those docker containers:
+In the event that you are facing any docker container related problems, the following would be helpful in re-creating those docker containers:
 
 ```sh
 wp-env destroy
