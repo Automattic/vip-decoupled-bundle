@@ -93,7 +93,7 @@ function render_admin_notices() {
 	if ( ! is_decoupled() ) {
 
 		if ( is_multisite() ) {
-			$administration_url = network_admin_url( 'site-settings.php?id='.get_current_blog_id() );
+			$administration_url = network_admin_url( 'site-settings.php?id=' . get_current_blog_id() );
 		}
 
 		?>

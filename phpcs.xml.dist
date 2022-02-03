@@ -14,7 +14,6 @@
 	<!-- Other directories -->
 	<exclude-pattern>\.git/*</exclude-pattern>
 	<exclude-pattern>vendor/*</exclude-pattern>
-	<exclude-pattern>test/*</exclude-pattern>
 
 	<!-- How to scan -->
 	<!-- Strip the file paths down to the relevant bit -->
@@ -48,4 +47,7 @@
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
 
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 </ruleset>

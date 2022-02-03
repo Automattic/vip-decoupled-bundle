@@ -88,7 +88,7 @@ Run the following in order to install the right php packages, start a local word
 ```sh
 composer install
 wp-env start
-composer test-local
+composer test
 ```
 
 ### Troubleshooting
