@@ -88,6 +88,17 @@ function transform_block_attributes( $block ) {
  * @return array
  */
 function parse_inner_html( $html ) {
+	// wp_strip_all_tags removes the linebreak characters as well, which breaks this check which is why it's not been used
+	$taglessValue = strip_tags($html);
+
+	// Check if the html provided is just a string or not
+	if ( $html ===  $taglessValue) {
+		return [
+			'innerHTMLUnwrapped' => trim($taglessValue),
+			'tagName'            => null,
+		];
+	}
+
 	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#s';
 	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#s';
 	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';

@@ -28,7 +28,7 @@ class BlocksTest extends WP_UnitTestCase {
 			[
 				'Hello, world!',
 				[
-					'innerHTMLUnwrapped' => null,
+					'innerHTMLUnwrapped' => 'Hello, world!',
 					'tagName'            => null,
 				],
 			],
