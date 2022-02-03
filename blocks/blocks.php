@@ -88,7 +88,11 @@ function transform_block_attributes( $block ) {
  * @return array
  */
 function parse_inner_html( $html ) {
-	// Strip all the tags from the provided html, and compare it to the trimmed original html
+	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#s';
+	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#s';
+	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';
+
+	/ Strip all the tags from the provided html, and compare it to the trimmed original html
 	// to see if its the same or not. If it is the same, then there's no html provided
 	$tagless_value = wp_strip_all_tags( $html );
 
@@ -99,10 +103,6 @@ function parse_inner_html( $html ) {
 			'tagName'            => null,
 		];
 	}
-
-	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#s';
-	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#s';
-	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';
 
 	if ( preg_match( $wrapping_tag_pattern, $html, $matches ) ) {
 		// Check for orphaned tag that would indicate that we should not have
