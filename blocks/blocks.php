@@ -61,7 +61,7 @@ function transform_block_attributes( $block ) {
 		$block['attributes']['originalHeight'] = $attachment_metadata['height'];
 		$block['attributes']['originalWidth']  = $attachment_metadata['width'];
 		$block['attributes']['srcset']         = \wp_get_attachment_image_srcset( $block['attributes']['id'] );
-		$block['attributes']['alt']            = trim( strip_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
+		$block['attributes']['alt']            = trim( wp_strip_all_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
 
 		// If width and height attributes aren't exposed, add the default ones
 		if ( ! isset( $block['attributes']['height'] ) ) {
