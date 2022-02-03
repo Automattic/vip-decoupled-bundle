@@ -88,13 +88,14 @@ function transform_block_attributes( $block ) {
  * @return array
  */
 function parse_inner_html( $html ) {
-	// wp_strip_all_tags removes the linebreak characters as well, which breaks this check which is why it's not been used
-	$taglessValue = strip_tags($html);
+	// Strip all the tags from the provided html, and compare it to the trimmed original html
+	// to see if its the same or not. If it is the same, then there's no html provided
+	$tagless_value = wp_strip_all_tags( $html );
 
-	// Check if the html provided is just a string or not
-	if ( $html ===  $taglessValue) {
+	// trim is necessary as the wp_strip_all_tags is removing all the linebreaks so this accounts for that
+	if ( trim( $html ) === $tagless_value ) {
 		return [
-			'innerHTMLUnwrapped' => trim($taglessValue),
+			'innerHTMLUnwrapped' => $tagless_value,
 			'tagName'            => null,
 		];
 	}
