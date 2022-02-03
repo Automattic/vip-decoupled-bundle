@@ -88,9 +88,9 @@ function transform_block_attributes( $block ) {
  * @return array
  */
 function parse_inner_html( $html ) {
-	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#';
-	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#';
-	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#';
+	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#s';
+	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#s';
+	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';
 
 	if ( preg_match( $wrapping_tag_pattern, $html, $matches ) ) {
 		// Check for orphaned tag that would indicate that we should not have
