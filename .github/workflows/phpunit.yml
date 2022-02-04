@@ -1,12 +1,9 @@
 name: PHPUnit
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
-      - develop
+      - trunk
 
 jobs:
   build:
@@ -26,9 +23,13 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
+    - name: Install wordpress environment
+      run: npm -g install @wordpress/env
+
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
+        tools: composer
         php-version: ${{ matrix.php-versions }}
 
     - name: Setup MySQL
@@ -47,8 +48,8 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress
 
-    - name: Install WordPress tests
-      run: bash bin/install-wp-tests.sh ${{ env.DB_DATABASE }} ${{ env.DB_USER }} ${{ env.DB_PASSWORD }} localhost latest
+    - name: Setup the wordpress environment
+      run: wp-env start  
 
     - name: PHPUnit
       run: composer test

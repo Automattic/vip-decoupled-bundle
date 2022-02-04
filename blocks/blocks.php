@@ -61,7 +61,7 @@ function transform_block_attributes( $block ) {
 		$block['attributes']['originalHeight'] = $attachment_metadata['height'];
 		$block['attributes']['originalWidth']  = $attachment_metadata['width'];
 		$block['attributes']['srcset']         = \wp_get_attachment_image_srcset( $block['attributes']['id'] );
-		$block['attributes']['alt']            = trim( strip_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
+		$block['attributes']['alt']            = trim( wp_strip_all_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
 
 		// If width and height attributes aren't exposed, add the default ones
 		if ( ! isset( $block['attributes']['height'] ) ) {
@@ -88,9 +88,21 @@ function transform_block_attributes( $block ) {
  * @return array
  */
 function parse_inner_html( $html ) {
-	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#';
-	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#';
-	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#';
+	$wrapping_tag_pattern = '#^\s*<([A-z][A-z0-9]*)\b([^>])*>(.*?)</\1>\s*$#s';
+	$self_closing_pattern = '#^\s*<([A-z][A-z0-9]*)+?\b(.*?)\/>\s*$#s';
+	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';
+
+	// Strip all the tags from the provided html, and compare it to the trimmed original html
+	// to see if its the same or not. If it is the same, then there's no html provided
+	$tagless_value = wp_strip_all_tags( $html );
+
+	// trim is necessary as the wp_strip_all_tags is removing all the linebreaks so this accounts for that
+	if ( trim( $html ) === $tagless_value ) {
+		return [
+			'innerHTMLUnwrapped' => $tagless_value,
+			'tagName'            => null,
+		];
+	}
 
 	if ( preg_match( $wrapping_tag_pattern, $html, $matches ) ) {
 		// Check for orphaned tag that would indicate that we should not have

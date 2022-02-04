@@ -47,4 +47,7 @@
 		<exclude name="Generic.Arrays.DisallowShortArraySyntax.Found" />
 	</rule>
 
+	<rule ref="WordPress.Files.FileName.InvalidClassFileName">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
 </ruleset>

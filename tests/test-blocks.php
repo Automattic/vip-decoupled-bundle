@@ -94,7 +94,7 @@ class BlocksTest extends WP_UnitTestCase {
 
 		// Make the same assertion with white space surrounding the input.
 		$wrapped_input_html = sprintf( "\n\n   %s   \n\n", $input_html );
-		$output = parse_inner_html( $wrapped_input_html );
+		$output             = parse_inner_html( $wrapped_input_html );
 		$this->assertEquals( $expected_output, $output );
 	}
 }

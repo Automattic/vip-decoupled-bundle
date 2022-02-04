@@ -1,13 +1,10 @@
 name: PHP CodeSniffer
 
 on:
-  push:
-    branches:
-      - develop
   pull_request:
     branches:
-      - develop
-
+      - trunk
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,6 +20,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
+        tools: composer
         php-version: ${{ matrix.php-versions }}
 
     - name: Validate composer.json and composer.lock
