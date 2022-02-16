@@ -42,10 +42,10 @@ function is_decoupled() {
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.6.7
+ * WPGraphQL 1.6.12
  */
 if ( is_plugin_enabled( 'wpgraphql' ) ) {
-	require_once __DIR__ . '/lib/wp-graphql-1.6.7/wp-graphql.php';
+	require_once __DIR__ . '/lib/wp-graphql-1.6.12/wp-graphql.php';
 }
 
 /**
