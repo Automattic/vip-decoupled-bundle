@@ -98,7 +98,26 @@ function validate_token( $token, $post_id, $action ) {
 
 		// Check if token matches. If it does, mark as expired.
 		if ( ! $is_expired && $token === $saved['token'] && $action === $saved['action'] ) {
-			$is_expired = true;
+			/**
+			 * Filter whether to expire the token on use. By default, tokens are
+			 * "one-time use" and we mark them as expired as soon as they are used.
+			 * If you want to allow tokens to be used more than once, filter this
+			 * value to `false`. Understand the security implications of this change:
+			 * Within the expiration window, tokens / preview URLs become bearer
+			 * tokens for viewing the associated draft post preview. Anyone who
+			 * possesses them will be able to view and share the preview, even if they
+			 * are not an authorized WordPress user, and could share them with anyone
+			 * else.
+			 *
+			 * @param bool   $expire_on_use Whether the token should expire on use.
+			 * @param string $action        Action that will be performed with this token.
+			 */
+			$expire_on_use = apply_filters( 'vip_decoupled_token_expire_on_use', true, $action );
+
+			if ( $expire_on_use ) {
+				$is_expired = true;
+			}
+
 			$is_valid   = true;
 		}
 
