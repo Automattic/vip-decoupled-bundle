@@ -118,7 +118,7 @@ function validate_token( $token, $post_id, $action ) {
 				$is_expired = true;
 			}
 
-			$is_valid   = true;
+			$is_valid = true;
 		}
 
 		// Delete expired tokens.
