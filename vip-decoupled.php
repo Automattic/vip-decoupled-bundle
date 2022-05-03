@@ -15,26 +15,15 @@
  * @package vip-bundle-decoupled
  */
 
+namespace WPCOMVIP\Decoupled;
+
+use function WPCOMVIP\Decoupled\Admin\is_decoupled;
 use function WPCOMVIP\Decoupled\Settings\is_plugin_enabled;
 
 /**
- * Determine whether the site has been decoupled. Currently, this is only a
- * function of whether a distinct home URL has been set.
- *
- * @return bool
+ * Admin UI and helpers
  */
-function is_decoupled() {
-	static $is = null;
-
-	if ( null === $is ) {
-		$frontend = wp_parse_url( home_url(), PHP_URL_HOST );
-		$backend  = wp_parse_url( site_url(), PHP_URL_HOST );
-
-		$is = $frontend !== $backend;
-	}
-
-	return $is;
-}
+require_once __DIR__ . '/admin/admin.php';
 
 /**
  * Enable settings
@@ -63,7 +52,7 @@ require_once __DIR__ . '/cors/cors.php';
 /**
  * Enable decoupled previews
  */
-if ( is_plugin_enabled( 'preview' ) && is_decoupled() ) {
+if ( is_plugin_enabled( 'preview' ) ) {
 	require_once __DIR__ . '/preview/preview.php';
 }
 
@@ -77,9 +66,7 @@ if ( is_plugin_enabled( 'registration' ) ) {
 /**
  * Adjust resource URLs
  */
-if ( is_decoupled() ) {
-	require_once __DIR__ . '/urls/urls.php';
-}
+require_once __DIR__ . '/urls/urls.php';
 
 /**
  * Render admin notices if there are compatibility issues.

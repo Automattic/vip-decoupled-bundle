@@ -5,6 +5,8 @@
 
 namespace WPCOMVIP\Decoupled\URLs;
 
+use function WPCOMVIP\Decoupled\Admin\is_decoupled;
+
 /**
  * Setting `home` and `siteurl` options to different values helps us set
  * permalinks correctly, but it causes some problems for resouces that we still
@@ -14,6 +16,10 @@ namespace WPCOMVIP\Decoupled\URLs;
  * @return string
  */
 function update_resource_url( $resource_url ) {
+	if ( ! is_decoupled() ) {
+		return $resource_url;
+	}
+
 	$home_path     = wp_make_link_relative( home_url() );
 	$resource_path = wp_make_link_relative( $resource_url );
 
@@ -26,13 +32,18 @@ function update_resource_url( $resource_url ) {
 
 function add_filters() {
 	$filters = [
+		// Feed links
 		'author_feed_link',
 		'category_feed_link',
 		'feed_link',
 		'post_comments_feed_link',
-		'rest_url',
 		'tag_feed_link',
 		'taxonomy_feed_link',
+
+		// WP REST API
+		'rest_url',
+
+		// Media library
 		'wp_get_attachment_url',
 	];
 
