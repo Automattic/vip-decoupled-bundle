@@ -227,7 +227,7 @@ class UrlsTest extends WP_UnitTestCase {
 						],
 						[
 							'input'    => 'http://example1.com/test/456',
-							'expected' => 'http://example2.com/test/456'
+							'expected' => 'http://example2.com/test/456',
 						],
 					],
 				],
