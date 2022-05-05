@@ -11,21 +11,27 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 
 ## Setting your home URL
 
-WordPress needs to know the address of your frontend so that it can point permalinks, feed links, and other URLs to the correct destination. WordPress uses the `home` option for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
+WordPress needs to know the address of your frontend so that it can point previews, permalinks, feed links, and other URLs to the correct destination. WordPress uses the `home` option for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
 
-You can make this change in the Dashboard at Settings > General > Site Address (URL). Alternatively, you can define the `WP_HOME` constant in your `wp-config.php` or [`vip-config.php` on VIP][vip-config]:
+**Be careful:** In the Dashboard, WordPress labels the `home` option inconsistently and in ways that can be confusing and misleading. A related but separate option named `siteurl` governs where WordPress serves the Dashboard and other core functionality. You should not edit `siteurl`; however, WordPress sometimes labels the `home` option as "Site Address (URL)." The instructions below will help you correctly update the `home` option. This plugin also displays an admin notice when `home` is configured incorrectly.
+
+For traditional, single-site WordPress instances, update the `home` option Dashboard at Settings > General > Site Address (URL). Alternatively, you can define the `WP_HOME` constant in your `wp-config.php` or [`vip-config.php` on VIP][vip-config]:
 
 ```php
 define( 'WP_HOME', 'https://my-decoupled-frontend.example.com' );
 ```
 
-See [WordPress documentation for other options](https://wordpress.org/support/article/changing-the-site-url/#changing-the-site-url). **Note:** For multisite installs, you will need to update the `home` option or define a `WP_{$blog_id}_HOME` constant for each site that uses this plugin.
+For multisite instances, the `home` option must be set for each subsite that uses this plugin. Set it at "Network Admin > Sites > [Subsite] > Settings > Home". Alternatively, define a `WP_{$blog_id}_HOME` constant for each site that uses this plugin, e.g.:
 
-That's all the configuration that's needed to support your decoupled frontend. If you are using VIP's Next.js boilerplate, [head over to the README][nextjs-boilerplate] to get your frontend up and running.
+```php
+define( 'WP_2_HOME', 'https://my-decoupled-frontend.example.com' );
+```
 
 ## Settings and sub-plugins
 
 This plugin provides a settings page in the WordPress Dashboard at Settings > VIP Decoupled. There, you'll find your GraphQL endpoint. You can also see (and optionally disable) the "sub-plugins", described below, that this plugin provides.
+
+That's all the configuration that's needed to support your decoupled frontend. If you are using VIP's Next.js boilerplate, [head over to the README][nextjs-boilerplate] to get your frontend up and running.
 
 ### WPGraphQL
 

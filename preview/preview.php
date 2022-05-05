@@ -5,6 +5,8 @@
 
 namespace WPCOMVIP\Decoupled\Preview;
 
+use function WPCOMVIP\Decoupled\Admin\is_decoupled;
+
 require_once __DIR__ . '/token.php';
 
 /**
@@ -14,6 +16,11 @@ require_once __DIR__ . '/token.php';
  * @return void
  */
 function redirect_to_preview() {
+	// Not decoupled? Do not redirect.
+	if ( ! is_decoupled() ) {
+		return;
+	}
+
 	if ( is_preview() || ( is_singular() && get_query_var( 'preview' ) ) ) {
 		$post          = get_queried_object();
 		$preview_token = generate_token( $post->ID, 'preview', 'edit_posts' );
@@ -42,6 +49,11 @@ add_action( 'template_redirect', __NAMESPACE__ . '\\redirect_to_preview', 10, 0 
  * @return bool
  */
 function validate_preview_request( $is_private, $model_name, $data ) {
+	// Not decoupled? No use case for previewing via GraphQL.
+	if ( ! is_decoupled() ) {
+		return false;
+	}
+
 	// Already allowed?
 	if ( false === $is_private ) {
 		return $is_private;
