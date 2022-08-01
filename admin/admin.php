@@ -17,7 +17,7 @@ function is_decoupled() {
 	$frontend = $frontend_url . ( $frontend_port ? ':' . $frontend_port : '' );
 
 	$backend_url = wp_parse_url( site_url(), PHP_URL_HOST );
-	$backend_port = wp_parse_url( site_url(), PHP_URL_HOST );
+	$backend_port = wp_parse_url( site_url(), PHP_URL_PORT );
 	$backend = $backend_url . ( $backend_port ? ':' . $backend_port : '' );
 
 	return $frontend !== $backend;
