@@ -12,13 +12,13 @@ namespace WPCOMVIP\Decoupled\Admin;
  * @return bool
  */
 function is_decoupled() {
-	$frontend_url = wp_parse_url( home_url(), PHP_URL_HOST );
+	$frontend_url  = wp_parse_url( home_url(), PHP_URL_HOST );
 	$frontend_port = wp_parse_url( home_url(), PHP_URL_PORT );
-	$frontend = $frontend_url . ( $frontend_port ? ':' . $frontend_port : '' );
+	$frontend      = $frontend_url . ( $frontend_port ? ':' . $frontend_port : '' );
 
-	$backend_url = wp_parse_url( site_url(), PHP_URL_HOST );
+	$backend_url  = wp_parse_url( site_url(), PHP_URL_HOST );
 	$backend_port = wp_parse_url( site_url(), PHP_URL_PORT );
-	$backend = $backend_url . ( $backend_port ? ':' . $backend_port : '' );
+	$backend      = $backend_url . ( $backend_port ? ':' . $backend_port : '' );
 
 	return $frontend !== $backend;
 }
