@@ -2,5 +2,6 @@
 	"plugins": [
 		"."
 	],
-	"config": {}
+	"config": {},
+	"core": "WordPress/WordPress#6.0.1"
 }
