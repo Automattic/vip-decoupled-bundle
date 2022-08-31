@@ -16,7 +16,7 @@ namespace WPCOMVIP\Decoupled\Registration;
 function register_custom_post_types( $args, $post_type ) {
 	if (
 		isset( $args['show_in_graphql'] ) ||
-		true === $args['_builtin'] ||
+		( isset( $args['_builtin'] ) && true === $args['_builtin'] ) ||
 		false === $args['public']
 	) {
 		return $args;
