@@ -69,3 +69,19 @@ function update_preview_url( $preview_link ) {
 }
 
 add_filter( 'preview_post_link', __NAMESPACE__ . '\\update_preview_url', 10 );
+
+/**
+ * Update preview URLs for draft posts to point to the WP siteurl.
+ *
+ * @param string  $permalink The URL of the post.
+ * @param WP_Post $post The post object.
+ * @return string
+ */
+function update_post_preview_url( $permalink, $post ) {
+	if ( 'draft' === $post->post_status ) {
+		return str_replace( home_url(), site_url(), $permalink );
+	}
+
+	return $permalink;
+}
+add_filter( 'post_link', __NAMESPACE__ . '\\update_post_preview_url', 10, 2 );
