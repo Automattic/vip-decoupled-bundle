@@ -52,3 +52,20 @@ function add_filters() {
 	}
 }
 add_filters();
+
+/**
+ * Update preview URL to use WordPress URL so that
+ * WP can redirect to the correct Frontend preview url with a token.
+ *
+ * @param string $preview_link The preview URL of the post.
+ * @return string
+ */
+function update_preview_url( $preview_link ) {
+	if ( ! is_decoupled() ) {
+		return $preview_link;
+	}
+
+	return str_replace( home_url(), site_url(), $preview_link );
+}
+
+add_filter( 'preview_post_link', __NAMESPACE__ . '\\update_preview_url', 10 );

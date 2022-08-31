@@ -30,9 +30,16 @@ require_once __DIR__ . '/admin/admin.php';
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.6.12
+ * Load plugin.php to ensure we can access `is_plugin_active` function.
  */
-if ( is_plugin_enabled( 'wpgraphql' ) ) {
+require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+
+/**
+ * WPGraphQL 1.6.12
+ *
+ * Load only if the site or network does not have an active GraphQL plugin.
+ */
+if ( is_plugin_enabled( 'wpgraphql' ) && ! is_plugin_active( 'wp-graphql/wp-graphql.php' ) ) {
 	require_once __DIR__ . '/lib/wp-graphql-1.6.12/wp-graphql.php';
 }
 
