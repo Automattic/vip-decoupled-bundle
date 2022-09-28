@@ -2,5 +2,7 @@
 	"plugins": [
 		"."
 	],
-	"config": {}
+	"config": {
+		"WP_HOME": "http://localhost:3000"
+	}
 }

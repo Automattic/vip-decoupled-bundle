@@ -5,33 +5,58 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 - Previewing
 - Permalinks
 - Feeds
-- Rendering block-based content
+- Exposing structured data for block-based content
 
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
-## Setting your home URL
 
-WordPress needs to know the address of your frontend so that it can point previews, permalinks, feed links, and other URLs to the correct destination. WordPress uses the `home` option for this, but by default it is set to the same address that WordPress is served from. You must update it to the address of your decoupled frontend.
+## Getting started
 
-**Be careful:** In the Dashboard, WordPress labels the `home` option inconsistently and in ways that can be confusing and misleading. A related but separate option named `siteurl` governs where WordPress serves the Dashboard and other core functionality. You should not edit `siteurl`; however, WordPress sometimes labels the `home` option as "Site Address (URL)." The instructions below will help you correctly update the `home` option. This plugin also displays an admin notice when `home` is configured incorrectly.
+This plugin is ready for local development using [`wp-env`][wp-env] and Docker:
 
-For traditional, single-site WordPress instances, update the `home` option Dashboard at Settings > General > Site Address (URL). Alternatively, you can define the `WP_HOME` constant in your `wp-config.php` or [`vip-config.php` on VIP][vip-config]:
+```sh
+wp-env start
+```
+
+This command will start a local WordPress environment, activate the plugin, and be ready for GraphQL requests from our [Next.js boilerplate][nextjs-boilerplate] (which must be set up separately).
+
+The default credentials for the Admin Dashboard (provided by `wp-env`) are U: `admin` / P: `password`.
+
+
+## Configuration
+
+### Setting the home URL
+
+WordPress needs to know the address of your frontend so that it can point previews, permalinks, and other URLs to the correct destination. WordPress uses the `home` option for this, but by default it is set to the same address that WordPress is served from. This plugin requires you to update `home` to the address of your decoupled frontend. Additionally, it handles a few edge cases, like feed URLs, that we want to serve from WordPress (see `./urls/urls.php`).
+
+If you are using [`wp-env`][wp-env] for local development, this step is already done for you in [`.wp-env.json`][wp-env-file]. By default, it points to `http://localhost:3000`; if you make changes, you'll need to `stop` and `start` your environment for the changes to take effect.
+
+For other environments, you'll need to make this change manually. The easiest method is using WP-CLI:
+
+```sh
+wp option update home "https://my-decoupled-frontend.example.com"
+```
+
+You can also define a constant in code that overrides the value of the option:
 
 ```php
 define( 'WP_HOME', 'https://my-decoupled-frontend.example.com' );
 ```
 
-For multisite instances, the `home` option must be set for each subsite that uses this plugin. Set it at "Network Admin > Sites > [Subsite] > Settings > Home". Alternatively, define a `WP_{$blog_id}_HOME` constant for each site that uses this plugin, e.g.:
+It is also possible to make this change in the Admin Dashboard, but **be careful**: In the Admin Dashboard, WordPress labels the `home` option inconsistently and in ways that can be confusing and misleading. A related but separate option named `siteurl` governs where WordPress serves the Dashboard and other core functionality. You should not edit `siteurl`; however, WordPress sometimes labels the `home` option as "Site Address (URL)."
 
-```php
-define( 'WP_2_HOME', 'https://my-decoupled-frontend.example.com' );
-```
+Multisite installations require different configuration. Please see [`MULTISITE.md`][multisite-file].
 
-## Settings and sub-plugins
+### Plugin settings
 
-This plugin provides a settings page in the WordPress Dashboard at Settings > VIP Decoupled. There, you'll find your GraphQL endpoint. You can also see (and optionally disable) the "sub-plugins", described below, that this plugin provides.
+This plugin provides a settings page in the Admin Dashboard, found at Settings > VIP Decoupled. There, you'll find your GraphQL endpoint. You can also see (and optionally disable) the "sub-plugins", described below, that this plugin provides.
 
 That's all the configuration that's needed to support your decoupled frontend. If you are using VIP's Next.js boilerplate, [head over to the README][nextjs-boilerplate] to get your frontend up and running.
+
+
+## Sub-plugins
+
+This plugin bundle provides a number of "sub-plugins" that are commonly useful in decoupled environments. You are free to disable any of them and bring your own alternatives.
 
 ### WPGraphQL
 
@@ -76,39 +101,9 @@ This plugin overrides WordPress's native preview functionality and securely send
 
 This plugin currently only works with our Next.js boilerplate and should be disabled if you are not using it. 
 
-## Running unit tests
-
-### Pre-requisites
-
-In order to run the unit tests, you will need the following:
-
-- [Docker](https://www.docker.com/get-started)
-- [Composer](https://getcomposer.org/download/)
-- [wp-env](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/)
-- PHP <= 7.4
-
-### Commands to run the tests
-
-Run the following in order to install the right php packages, start a local wordpress environment and run the tests against it:
-
-```sh
-composer install
-wp-env start
-composer test
-```
-
-### Troubleshooting
-
-In the event that you are facing any docker container related problems, the following would be helpful in re-creating those docker containers:
-
-```sh
-wp-env destroy
-docker volume prune
-```
-
-It's also helpful to delete all the images pertaining to what was destroyed above.
-
 [graphql]: https://graphql.org
+[mulisite-file]: MULTISITE.md
 [nextjs-boilerplate]: https://github.com/Automattic/vip-go-nextjs-skeleton
-[vip-config]: https://docs.wpvip.com/technical-references/vip-codebase/vip-config-directory/
 [wp-graphql]: https://wpgraphql.com
+[wp-env]: https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
+[wp-env-file]: wp-env.json
