@@ -254,7 +254,7 @@ function register_decoupled_settings_plugin_fields() {
 				is_plugin_enabled( 'preview' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Preview',
-				'changes the behavior of the Preview button, so that you can preview posts on your decoupled frontend.'
+				'changes the behavior of the Preview button to work with VIP’s Next.js boilerplate.'
 			);
 			render_checkbox_field(
 				$name,

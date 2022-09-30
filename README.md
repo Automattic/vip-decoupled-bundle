@@ -99,10 +99,11 @@ See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use a
 
 This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
 
-This plugin currently only works with our Next.js boilerplate and should be disabled if you are not using it. 
+**This plugin currently only works with our Next.js boilerplate** and should be disabled if you are not using it. If you are interested in using this plugin for other frontend frameworks, please see the [preview `README`][preview-readme].
 
 [graphql]: https://graphql.org
 [mulisite-file]: MULTISITE.md
+[preview-readme]: preview/README.md
 [nextjs-boilerplate]: https://github.com/Automattic/vip-go-nextjs-skeleton
 [wp-graphql]: https://wpgraphql.com
 [wp-env]: https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
