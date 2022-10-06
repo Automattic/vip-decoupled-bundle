@@ -14,11 +14,18 @@ namespace WPCOMVIP\Decoupled\Registration;
  * @return array
  */
 function register_custom_post_types( $args, $post_type ) {
-	if (
-		isset( $args['show_in_graphql'] ) ||
-		true === $args['_builtin'] ||
-		false === $args['public']
-	) {
+	// Already available in GraphQL.
+	if ( isset( $args['show_in_graphql'] ) ) {
+		return $args;
+	}
+
+	// Don't show "built-in" post types like nav menus.
+	if ( isset( $args['_builtin'] ) && true === $args['_builtin'] ) {
+		return $args;
+	}
+
+	// Don't show post types that are marked not public.
+	if ( isset( $args['public'] ) && false === $args['public'] ) {
 		return $args;
 	}
 
