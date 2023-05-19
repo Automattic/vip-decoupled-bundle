@@ -17,21 +17,22 @@ function get_meta_key() {
 /**
  * Get token lifetime (expiration period) in seconds.
  *
- * @param  string $action Action that will be performed with this token.
+ * @param string $action  Action that will be performed with this token.
+ * @param int    $post_id Post ID.
  * @return int
  */
-function get_token_lifetime_in_seconds( $action ) {
-	$one_hour_in_seconds = 60 * 60;
-	$default_lifetime    = $one_hour_in_seconds;
-	$max_lifetime        = $one_hour_in_seconds * 3;
+function get_token_lifetime_in_seconds( $action, $post_id ) {
+	$default_lifetime = HOUR_IN_SECONDS;
+	$max_lifetime     = 3 * HOUR_IN_SECONDS;
 
 	/**
 	 * Filter the allowed token lifetime.
 	 *
 	 * @param int    $default_lifetime Token lifetime in seconds.
 	 * @param string $action           Action that will be performed with this token.
+	 * @param int    $post_id          Post ID.
 	 */
-	$token_lifetime = apply_filters( 'vip_decoupled_token_lifetime', $default_lifetime, $action );
+	$token_lifetime = (int) apply_filters( 'vip_decoupled_token_lifetime', $default_lifetime, $action, $post_id );
 
 	// Enforce a maximum token lifetime.
 	if ( $token_lifetime > $max_lifetime ) {
@@ -56,7 +57,7 @@ function generate_token( $post_id, $action, $cap ) {
 		wp_die( esc_html( __( 'You do not have sufficient permissions to access this page.' ) ) );
 	}
 
-	$token_lifetime = get_token_lifetime_in_seconds( $action );
+	$token_lifetime = get_token_lifetime_in_seconds( $action, $post_id );
 	$expiration     = time() + $token_lifetime;
 	$secret         = wp_generate_password( 64, true, true );
 	$token          = hash_hmac( 'sha256', $action, $secret );
@@ -111,8 +112,9 @@ function validate_token( $token, $post_id, $action ) {
 			 *
 			 * @param bool   $expire_on_use Whether the token should expire on use.
 			 * @param string $action        Action that will be performed with this token.
+			 * @param int    $post_id       Post ID.
 			 */
-			$expire_on_use = apply_filters( 'vip_decoupled_token_expire_on_use', true, $action );
+			$expire_on_use = (bool) apply_filters( 'vip_decoupled_token_expire_on_use', true, $action, $post_id );
 
 			if ( $expire_on_use ) {
 				$is_expired = true;
