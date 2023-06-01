@@ -3,12 +3,12 @@
     "description": "A WordPress plugin bundle to support decoupled WordPress",
     "type": "wordpress-plugin",
     "require-dev": {
-        "php": ">=7.0",
+        "php": ">=7.4",
         "wp-coding-standards/wpcs": "^2.3",
         "automattic/vipwpcs": "^2.3",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
         "dealerdirect/phpcodesniffer-composer-installer": "^0.7.1",
-        "phpunit/phpunit": "^8",
+        "phpunit/phpunit": "^9.5",
         "yoast/phpunit-polyfills": "^1.0"
     },
     "scripts": {
