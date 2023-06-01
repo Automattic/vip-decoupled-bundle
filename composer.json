@@ -14,8 +14,8 @@
     "scripts": {
         "phpcs": "phpcs",
         "phpcs-fix": "phpcbf",
-        "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle ./vendor/bin/phpunit",
-        "test-multisite": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle ./vendor/bin/phpunit -c tests/phpunit/multisite.xml"
+        "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle vendor/bin/phpunit -c phpunit.xml.dist",
+        "test-multisite": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle vendor/bin/phpunit -c tests/phpunit/multisite.xml"
     },
     "license": "GPL-2.0-or-later",
     "config": {
