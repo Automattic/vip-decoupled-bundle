@@ -47,6 +47,10 @@ It is also possible to make this change in the Admin Dashboard, but **be careful
 
 Multisite installations require different configuration. Please see [`MULTISITE.md`][multisite-file].
 
+## Jetpack Configuration
+
+Prior to version 11.2, Jetpack had syncing functionality that fires on WordPress shutdown hooks. This can cause performance issues for API requests. A more performant architecture is used in all versions of Jetpack since 11.2. If you are unable to update Jetpack, you can [install a VIP written plugin][vip-jetpack-sync-cron] to offload the sync to cron. It also detects the verson of Jetpack and will not conflict if you upgrade Jetpack in the future.
+
 ### Plugin settings
 
 This plugin provides a settings page in the Admin Dashboard, found at Settings > VIP Decoupled. There, you'll find your GraphQL endpoint. You can also see (and optionally disable) the "sub-plugins", described below, that this plugin provides.
@@ -108,3 +112,4 @@ This plugin overrides WordPress's native preview functionality and securely send
 [wp-graphql]: https://wpgraphql.com
 [wp-env]: https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
 [wp-env-file]: wp-env.json
+[vip-jetpack-sync-cron]: https://github.com/Automattic/vip-jetpack-sync-cron
