@@ -23,6 +23,7 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
   - [WPGraphQL](#wpgraphql)
   - [WPGraphQL Content blocks](#wpgraphql-content-blocks)
   - [WPGraphQL Preview](#wpgraphql-preview)
+- [Contributing](#contributing)
 
 ## Installation
 
@@ -158,6 +159,10 @@ See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use a
 This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
 
 **This plugin currently only works with our Next.js boilerplate** and should be disabled if you are not using it. If you are interested in using this plugin for other frontend frameworks, please see the [preview `README`][preview-readme].
+
+## Contributing
+
+Refer [here](CONTRIBUTING.md) for how to contribute to this plugin's development.
 
 [graphql]: https://graphql.org
 [mulisite-file]: MULTISITE.md
