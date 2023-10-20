@@ -1,5 +1,7 @@
 <?php
 /**
+ * The content blocks module.
+ * 
  * @package vip-bundle-decoupled
  */
 
@@ -63,7 +65,7 @@ function transform_block_attributes( $block ) {
 		$block['attributes']['srcset']         = \wp_get_attachment_image_srcset( $block['attributes']['id'] );
 		$block['attributes']['alt']            = trim( wp_strip_all_tags( \get_post_meta( $block['attributes']['id'], '_wp_attachment_image_alt', true ) ) );
 
-		// If width and height attributes aren't exposed, add the default ones
+		// If width and height attributes aren't exposed, add the default ones.
 		if ( ! isset( $block['attributes']['height'] ) ) {
 			$block['attributes']['height'] = $attachment_metadata['height'];
 		}
@@ -93,10 +95,10 @@ function parse_inner_html( $html ) {
 	$orphaned_tag_pattern = '#^[^<]*</[A-z][A-z0-9]*>#s';
 
 	// Strip all the tags from the provided html, and compare it to the trimmed original html
-	// to see if its the same or not. If it is the same, then there's no html provided
+	// to see if its the same or not. If it is the same, then there's no html provided.
 	$tagless_value = wp_strip_all_tags( $html );
 
-	// trim is necessary as the wp_strip_all_tags is removing all the linebreaks so this accounts for that
+	// trim is necessary as the wp_strip_all_tags is removing all the linebreaks so this accounts for that.
 	if ( trim( $html ) === $tagless_value ) {
 		return [
 			'innerHTMLUnwrapped' => $tagless_value,
@@ -107,7 +109,7 @@ function parse_inner_html( $html ) {
 	if ( preg_match( $wrapping_tag_pattern, $html, $matches ) ) {
 		// Check for orphaned tag that would indicate that we should not have
 		// stripped the top-level wrapping tag. Example:
-		// <div>1</div><div>2</div>
+		// <div>1</div><div>2</div>.
 		if ( 1 === preg_match( $orphaned_tag_pattern, $matches[3] ) ) {
 			return [
 				'innerHTMLUnwrapped' => null,

@@ -55,6 +55,9 @@
 		<!-- Allow short array syntax -->
 		<exclude name="Universal.Arrays.DisallowShortArraySyntax.Found" />
 
+		<!-- GraphQL plugin uses this, so ignore it -->
+		<exclude name="Universal.NamingConventions.NoReservedKeywordParameterNames.defaultFound" />
+
 		<!-- Do not enforce 'class-' prefix -->
 		<exclude name="WordPress.Files.FileName.InvalidClassFileName" />
 

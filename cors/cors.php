@@ -1,5 +1,7 @@
 <?php
 /**
+ * The CORS module.
+ * 
  * @package vip-bundle-decoupled
  */
 
@@ -11,7 +13,7 @@ use function WPCOMVIP\Decoupled\Settings\get_allowed_origins;
  * Add development origins. Filter `allowed_http_origins` to provide access to
  * additional development domains.
  *
- * @param  string[] $origins HTTP origins
+ * @param  string[] $origins HTTP origins.
  * @return string[]
  */
 function add_development_origins( $origins ) {

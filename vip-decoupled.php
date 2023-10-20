@@ -20,50 +20,50 @@ namespace WPCOMVIP\Decoupled;
 use function WPCOMVIP\Decoupled\Settings\is_plugin_enabled;
 
 /**
- * Admin UI and helpers
+ * Admin UI and helpers.
  */
 require_once __DIR__ . '/admin/admin.php';
 
 /**
- * Enable settings
+ * Enable settings.
  */
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.6.12
+ * WPGraphQL 1.6.12.
  */
 if ( is_plugin_enabled( 'wpgraphql' ) ) {
 	require_once __DIR__ . '/lib/wp-graphql-1.6.12/wp-graphql.php';
 }
 
 /**
- * Make Gutenberg blocks available in WPGraphQL
+ * Make Gutenberg blocks available in WPGraphQL.
  */
 if ( is_plugin_enabled( 'blocks' ) ) {
 	require_once __DIR__ . '/blocks/blocks.php';
 }
 
 /**
- * Adjust CORS headers
+ * Adjust CORS headers.
  */
 require_once __DIR__ . '/cors/cors.php';
 
 /**
- * Enable decoupled previews
+ * Enable decoupled previews.
  */
 if ( is_plugin_enabled( 'preview' ) ) {
 	require_once __DIR__ . '/preview/preview.php';
 }
 
 /**
- * Automatic type registration
+ * Automatic type registration.
  */
 if ( is_plugin_enabled( 'registration' ) ) {
 	require_once __DIR__ . '/registration/registration.php';
 }
 
 /**
- * Adjust resource URLs
+ * Adjust resource URLs.
  */
 require_once __DIR__ . '/urls/urls.php';
 

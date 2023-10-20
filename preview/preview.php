@@ -1,5 +1,7 @@
 <?php
 /**
+ * The preview module.
+ * 
  * @package vip-bundle-decoupled
  */
 
