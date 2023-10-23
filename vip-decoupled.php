@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: WordPress VIP Decoupled Plugin Bundle
+ * Plugin Name: VIP Decoupled Plugin Bundle
  * Plugin URI: https://github.com/Automattic/vip-decoupled-bundle
  * Description: Plugin bundle to quickly provide a decoupled WordPress setup.
  * Author: WordPress VIP
  * Text Domain: vip-decoupled-bundle
- * Version: 1.0.0
+ * Version: 0.3.0
  * Requires at least: 5.9.0
  * Tested up to: 6.3.0
  * Requires PHP: 7.4

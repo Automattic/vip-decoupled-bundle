@@ -27,7 +27,7 @@ if ( ! $_tests_dir ) {
 
 // Fallback.
 if ( ! $_tests_dir ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
+	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
 // Give access to tests_add_filter() function.

@@ -3,6 +3,7 @@
     "description": "A WordPress plugin bundle to support decoupled WordPress",
     "type": "wordpress-plugin",
     "require-dev": {
+        "php": ">=7.4",
         "automattic/vipwpcs": "3.0.0",
         "phpcompatibility/phpcompatibility-wp": "^2.1",
         "phpunit/phpunit": "^9.5",
@@ -20,9 +21,6 @@
 			"dealerdirect/phpcodesniffer-composer-installer": true,
 			"mnsami/composer-custom-directory-installer": false
 		},
-		"sort-packages": true,
-		"platform": {
-			"php": "7.4"
-		}
+		"sort-packages": true
 	}
 }
