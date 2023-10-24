@@ -13,7 +13,7 @@ namespace WPCOMVIP\Decoupled\Blocks;
  * @return string Version number.
  */
 function get_block_version() {
-	return '0.2.0';
+	return '0.3.0';
 }
 
 /**
