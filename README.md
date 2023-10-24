@@ -10,9 +10,8 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
 ## Table of contents
+- [Table of contents](#table-of-contents)
 - [Installation](#installation)
-  - [Install via `git subtree`](#install-via-git-subtree)
-  - [Install via ZIP file](#install-via-zip-file)
   - [Plugin activation](#plugin-activation)
 - [Getting started](#getting-started)
 - [Configuration](#configuration)
@@ -27,45 +26,17 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 
 ## Installation
 
-### Install via `git subtree`
-
-The latest version of the WordPress VIP Decoupled Plugin Bundle is available in the default `trunk` branch of this repository.
-
-We recommend installing the latest plugin version [via `git subtree`][wpvip-plugin-subtrees] within your site's repository:
-
-```bash
-# Enter your project's root directory:
-cd my-site-repo/
-
-# Add a subtree for the trunk branch:
-git subtree add --prefix plugins/vip-decoupled-bundle git@github.com:Automattic/vip-decoupled-bundle.git trunk --squash
-```
-
-To deploy the plugin to a remote branch, `git push` the committed subtree.
-
-The `trunk` branch will stay up to date with the latest version of the plugin. Use this command to pull the latest `trunk` branch changes:
-
-```bash
-git subtree pull --prefix plugins/vip-decoupled-bundle git@github.com:Automattic/vip-decoupled-bundle.git trunk --squash
-```
-
-Ensure that the plugin is up-to-date by pulling changes often.
-
-Note: We **do not recommend** using `git submodule`. [Submodules on WPVIP that require authentication][wpvip-plugin-submodules] will fail to deploy.
-
-### Install via ZIP file
-
 The latest version of the plugin can be downloaded from the [repository's Releases page][repo-releases]. Unzip the downloaded plugin and add it to the `plugins/` directory of your site's GitHub repository.
 
 ### Plugin activation
 
-Usually VIP recommends [activating plugins with code][wpvip-plugin-activate]. In this case, we are recommending activating the plugin in the WordPress Admin dashboard. This will allow the plugin to be more easily enabled and disabled during testing.
+For VIP sites, we recommend [activating plugins with code][wpvip-plugin-activate]. 
 
-To activate the installed plugin:
+For Non-VIP sites, activate the plugin in the WordPress Admin dashboard using the following steps:
 
 1. Navigate to the WordPress Admin dashboard as a logged-in user.
 2. Select **Plugins** from the lefthand navigation menu.
-3. Locate the "WordPress VIP Decoupled Plugin Bundle" plugin in the list and select the "Activate" link located below it.
+3. Locate the "VIP Decoupled Plugin Bundle" plugin in the list and select the "Activate" link located below it.
 
 ## Getting started
 
@@ -164,6 +135,7 @@ This plugin overrides WordPress's native preview functionality and securely send
 
 Refer [here](CONTRIBUTING.md) for how to contribute to this plugin's development.
 
+<!-- Links -->
 [graphql]: https://graphql.org
 [mulisite-file]: MULTISITE.md
 [preview-readme]: preview/README.md
@@ -172,3 +144,5 @@ Refer [here](CONTRIBUTING.md) for how to contribute to this plugin's development
 [wp-env]: https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
 [wp-env-file]: wp-env.json
 [vip-jetpack-sync-cron]: https://github.com/Automattic/vip-jetpack-sync-cron
+[repo-releases]: https://github.com/Automattic/vip-decoupled-bundle/releases
+[wpvip-plugin-activate]: https://docs.wpvip.com/how-tos/activate-plugins-through-code/
