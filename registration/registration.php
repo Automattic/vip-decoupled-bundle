@@ -1,5 +1,7 @@
 <?php
 /**
+ * The custom post types registration module.
+ * 
  * @package vip-bundle-decoupled
  */
 

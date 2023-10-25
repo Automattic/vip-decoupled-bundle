@@ -1,5 +1,7 @@
 <?php
 /**
+ * The compatibility/configuration checker module.
+ * 
  * @package vip-bundle-decoupled
  */
 
@@ -24,7 +26,8 @@ function is_decoupled() {
 }
 
 /**
- *
+ * Check if the multisite is misconfigured.
+ * 
  * @return bool
  */
 function is_misconfigured_multisite() {

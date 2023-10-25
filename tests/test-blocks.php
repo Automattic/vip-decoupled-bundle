@@ -98,4 +98,3 @@ class BlocksTest extends WP_UnitTestCase {
 		$this->assertEquals( $expected_output, $output );
 	}
 }
-

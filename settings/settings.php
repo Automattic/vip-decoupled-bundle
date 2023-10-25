@@ -1,5 +1,7 @@
 <?php
 /**
+ * The admin menu page module.
+ *
  * @package vip-bundle-decoupled
  */
 
@@ -84,7 +86,7 @@ function is_plugin_enabled( $plugin ) {
  */
 function render_graphql_endpoint() {
 	// Match logic in \WPGraphQL\Router:
-	// https://github.com/wp-graphql/wp-graphql/blob/df2c5b2556fcbd69983d96d4e906572d835c0832/src/Router.php
+	// https://github.com/wp-graphql/wp-graphql/blob/df2c5b2556fcbd69983d96d4e906572d835c0832/src/Router.php.
 	$endpoint = apply_filters( 'graphql_endpoint', null );
 	if ( empty( $endpoint ) && function_exists( '\\get_graphql_setting' ) ) {
 		$endpoint = get_graphql_setting( 'graphql_endpoint', 'graphql' );
@@ -187,7 +189,7 @@ function register_decoupled_settings() {
 	add_settings_section(
 		'plugins',
 		'Plugins',
-		function() {
+		function () {
 			?>
 			<p>These plugins provide core decoupled functionality. Additional WPGraphQL settings, including useful debugging settings, are located <a href="<?php echo esc_url( admin_url( 'admin.php?page=graphql' ) ); ?>">on their own page</a>.</p>
 			<?php
@@ -322,11 +324,18 @@ function register_decoupled_settings_cors_fields() {
 }
 add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings_cors_fields' );
 
+/**
+ * Sanitize the settings before saving.
+ *
+ * @param array $value the value that's to be sanitized, before saving.
+ * 
+ * @return array the sanitized value.
+ */
 function sanitize_decoupled_settings( $value ) {
 	if ( ! empty( $value['allowed_origins'] ) ) {
 		$split_text = explode( "\n", $value['allowed_origins'] );
 		$split_text = array_map(
-			function( $origin ) {
+			function ( $origin ) {
 				$parts = wp_parse_url( trim( $origin ) );
 
 				if ( ! is_array( $parts ) ) {

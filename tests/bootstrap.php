@@ -27,7 +27,7 @@ if ( ! $_tests_dir ) {
 
 // Fallback.
 if ( ! $_tests_dir ) {
-	$_tests_dir = '/tmp/wordpress-tests-lib';
+	$_tests_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/wordpress-tests-lib';
 }
 
 // Give access to tests_add_filter() function.
@@ -37,7 +37,7 @@ require_once "{$_tests_dir}/includes/functions.php";
  * Manually load the plugin being tested.
  */
 function _manually_load_plugin() {
-	require dirname( dirname( __FILE__ ) ) . '/vip-decoupled.php';
+	require dirname( __DIR__ ) . '/vip-decoupled.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );

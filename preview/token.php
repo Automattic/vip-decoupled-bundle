@@ -1,5 +1,7 @@
 <?php
 /**
+ * The token module for securing previews.
+ * 
  * @package vip-bundle-decoupled
  */
 

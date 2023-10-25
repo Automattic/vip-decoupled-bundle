@@ -1,4 +1,4 @@
-# WordPress VIP decoupled plugin bundle
+# WordPress VIP Decoupled Plugin Bundle
 
 This plugin bundle provides a number of plugins to help you quickly setup a decoupled WordPress application. It is designed to support VIP’s [Next.js boilerplate][nextjs-boilerplate] but can be used to support any decoupled frontend. It solves a number of common problems facing decoupled sites, including:
 
@@ -9,6 +9,34 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
+## Table of contents
+- [Table of contents](#table-of-contents)
+- [Installation](#installation)
+  - [Plugin activation](#plugin-activation)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+  - [Setting the home URL](#setting-the-home-url)
+- [Jetpack Configuration](#jetpack-configuration)
+  - [Plugin settings](#plugin-settings)
+- [Sub-plugins](#sub-plugins)
+  - [WPGraphQL](#wpgraphql)
+  - [WPGraphQL Content blocks](#wpgraphql-content-blocks)
+  - [WPGraphQL Preview](#wpgraphql-preview)
+- [Contributing](#contributing)
+
+## Installation
+
+The latest version of the plugin can be downloaded from the [repository's Releases page][repo-releases]. Unzip the downloaded plugin and add it to the `plugins/` directory of your site's GitHub repository.
+
+### Plugin activation
+
+For VIP sites, we recommend [activating plugins with code][wpvip-plugin-activate]. 
+
+For Non-VIP sites, activate the plugin in the WordPress Admin dashboard using the following steps:
+
+1. Navigate to the WordPress Admin dashboard as a logged-in user.
+2. Select **Plugins** from the lefthand navigation menu.
+3. Locate the "VIP Decoupled Plugin Bundle" plugin in the list and select the "Activate" link located below it.
 
 ## Getting started
 
@@ -21,7 +49,6 @@ wp-env start
 This command will start a local WordPress environment, activate the plugin, and be ready for GraphQL requests from our [Next.js boilerplate][nextjs-boilerplate] (which must be set up separately).
 
 The default credentials for the Admin Dashboard (provided by `wp-env`) are U: `admin` / P: `password`.
-
 
 ## Configuration
 
@@ -56,7 +83,6 @@ Prior to version 11.2, Jetpack had syncing functionality that fires on WordPress
 This plugin provides a settings page in the Admin Dashboard, found at Settings > VIP Decoupled. There, you'll find your GraphQL endpoint. You can also see (and optionally disable) the "sub-plugins", described below, that this plugin provides.
 
 That's all the configuration that's needed to support your decoupled frontend. If you are using VIP's Next.js boilerplate, [head over to the README][nextjs-boilerplate] to get your frontend up and running.
-
 
 ## Sub-plugins
 
@@ -105,6 +131,11 @@ This plugin overrides WordPress's native preview functionality and securely send
 
 **This plugin currently only works with our Next.js boilerplate** and should be disabled if you are not using it. If you are interested in using this plugin for other frontend frameworks, please see the [preview `README`][preview-readme].
 
+## Contributing
+
+Refer [here](CONTRIBUTING.md) for how to contribute to this plugin's development.
+
+<!-- Links -->
 [graphql]: https://graphql.org
 [mulisite-file]: MULTISITE.md
 [preview-readme]: preview/README.md
@@ -113,3 +144,5 @@ This plugin overrides WordPress's native preview functionality and securely send
 [wp-env]: https://developer.wordpress.org/block-editor/reference-guides/packages/packages-env/
 [wp-env-file]: wp-env.json
 [vip-jetpack-sync-cron]: https://github.com/Automattic/vip-jetpack-sync-cron
+[repo-releases]: https://github.com/Automattic/vip-decoupled-bundle/releases
+[wpvip-plugin-activate]: https://docs.wpvip.com/how-tos/activate-plugins-through-code/

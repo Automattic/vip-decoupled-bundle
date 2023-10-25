@@ -1,5 +1,7 @@
 <?php
 /**
+ * The URLs module.
+ * 
  * @package vip-bundle-decoupled
  */
 
@@ -30,9 +32,14 @@ function update_resource_url( $resource_url ) {
 	return site_url( $resource_path );
 }
 
+/**
+ * Update the feed, rest API and media library resource urls to use siteurl.
+ *
+ * @return void
+ */
 function add_filters() {
 	$filters = [
-		// Feed links
+		// Feed links.
 		'author_feed_link',
 		'category_feed_link',
 		'feed_link',
@@ -40,10 +47,10 @@ function add_filters() {
 		'tag_feed_link',
 		'taxonomy_feed_link',
 
-		// WP REST API
+		// WP REST API.
 		'rest_url',
 
-		// Media library
+		// Media library.
 		'wp_get_attachment_url',
 	];
 

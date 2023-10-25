@@ -1,6 +1,6 @@
 # Contributing
 
-Please open a pull request against the default branch (`trunk`).
+Please open a pull request against the default branch (`trunk`). The reviewers for the PR will be automatically assigned.
 
 ## Running unit tests
 
