@@ -4,7 +4,6 @@
 
 This marks the release of v1.0 of the plugin.
 
-- **Content Blocks:** Updated to v1.0.0.
 - **WPGraphQL:** Updated to v1.17.0.
 
 ## 0.3.0
