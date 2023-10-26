@@ -8,12 +8,13 @@
 namespace WPCOMVIP\Decoupled\Blocks;
 
 /**
- * The semver of the ContentBlock data type.
+ * The semver of the ContentBlock data type. It's meant as a signal for breaking changes
+ * in the blocks schema.
  *
  * @return string Version number.
  */
 function get_block_version() {
-	return '1.0.0';
+	return '0.2.0';
 }
 
 /**
