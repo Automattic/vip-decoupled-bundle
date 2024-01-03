@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.0
+
+- **WPGraphQL:** Updated to v1.19.0.
+
 ## 1.0.0
 
 This marks the release of v1.0 of the plugin.
