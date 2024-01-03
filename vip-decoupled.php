@@ -5,9 +5,9 @@
  * Description: Plugin bundle to quickly provide a decoupled WordPress setup.
  * Author: WordPress VIP
  * Text Domain: vip-decoupled-bundle
- * Version: 1.0.0
+ * Version: 1.1.0
  * Requires at least: 5.9.0
- * Tested up to: 6.3.0
+ * Tested up to: 6.4.0
  * Requires PHP: 7.4
  * License: GPL-3
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -30,10 +30,10 @@ require_once __DIR__ . '/admin/admin.php';
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.17.0.
+ * WPGraphQL 1.19.0.
  */
 if ( is_plugin_enabled( 'wpgraphql' ) ) {
-	require_once __DIR__ . '/lib/wp-graphql-1.17.0/wp-graphql.php';
+	require_once __DIR__ . '/lib/wp-graphql-1.19.0/wp-graphql.php';
 }
 
 /**
