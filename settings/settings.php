@@ -16,7 +16,7 @@ function get_settings_config() {
 	return [
 		'cap'         => 'manage_options',
 		'defaults'    => [
-			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'preview', 'registration' ],
+			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'block-data-api', 'preview', 'registration' ],
 			'allowed_origins' => [],
 		],
 		'group'       => 'VIP Decoupled',
@@ -248,7 +248,15 @@ function register_decoupled_settings_plugin_fields() {
 				is_plugin_enabled( 'blocks' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Content Blocks',
-				'exposes Gutenberg blocks as structured data, allowing you to map blocks to frontend components.'
+				'exposes Gutenberg blocks as HTML structured data, allowing you to map blocks to frontend components.'
+			);
+			render_checkbox_field(
+				$name,
+				'block-data-api',
+				is_plugin_enabled( 'block-data-api' ),
+				false,
+				'VIP Block Data API',
+				'exposes Gutenberg blocks as JSON data, with integrations for both the official WordPress REST API and WPGraphQL.'
 			);
 			render_checkbox_field(
 				$name,

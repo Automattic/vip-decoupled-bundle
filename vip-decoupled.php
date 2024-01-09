@@ -5,7 +5,7 @@
  * Description: Plugin bundle to quickly provide a decoupled WordPress setup.
  * Author: WordPress VIP
  * Text Domain: vip-decoupled-bundle
- * Version: 1.1.0
+ * Version: 1.2.0
  * Requires at least: 5.9.0
  * Tested up to: 6.4.0
  * Requires PHP: 7.4
@@ -41,6 +41,13 @@ if ( is_plugin_enabled( 'wpgraphql' ) ) {
  */
 if ( is_plugin_enabled( 'blocks' ) ) {
 	require_once __DIR__ . '/blocks/blocks.php';
+}
+
+/**
+ * VIP Block Data API.
+ */
+if ( is_plugin_enabled( 'block-data-api' ) ) {
+	require_once __DIR__ . '/lib/vip-block-data-api/vip-block-data-api.php';
 }
 
 /**
