@@ -125,7 +125,7 @@ This will allow you to easily map Gutenberg blocks to front-end components. Post
 
 See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use and render these blocks.
 
-*Note: In a future update, this will be deprecated and removed in favour of the VIP Block Data API plugin.*
+*Note: In a future update, this plugin will be deprecated and eventually removed in favour of the VIP Block Data API plugin.*
 
 ### WPGraphQL Preview
 
