@@ -125,6 +125,8 @@ This will allow you to easily map Gutenberg blocks to front-end components. Post
 
 See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use and render these blocks.
 
+*Note: In a future update, this will be deprecated and removed in favour of the VIP Block Data API plugin.*
+
 ### WPGraphQL Preview
 
 This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
