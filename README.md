@@ -10,18 +10,21 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
 ## Table of contents
+- [Table of contents](#table-of-contents)
 - [Installation](#installation)
-  - [Plugin activation](#plugin-activation)
+	- [Plugin activation](#plugin-activation)
 - [Getting started](#getting-started)
 - [Configuration](#configuration)
-  - [Setting the home URL](#setting-the-home-url)
+	- [Setting the home URL](#setting-the-home-url)
 - [Jetpack Configuration](#jetpack-configuration)
-  - [Plugin settings](#plugin-settings)
+	- [Plugin settings](#plugin-settings)
 - [Sub-plugins](#sub-plugins)
-  - [WPGraphQL](#wpgraphql)
-  - [WPGraphQL Content blocks](#wpgraphql-content-blocks)
-  - [WPGraphQL Preview](#wpgraphql-preview)
-  - [VIP Block Data API](#vip-block-data-api)
+	- [WPGraphQL](#wpgraphql)
+	- [WPGraphQL Preview](#wpgraphql-preview)
+	- [Block Data Plugins](#block-data-plugins)
+			- [WPGraphQL Content blocks](#wpgraphql-content-blocks)
+			- [VIP Block Data API](#vip-block-data-api)
+		- [Which Plugin Should I Choose?](#which-plugin-should-i-choose)
 - [Contributing](#contributing)
 
 ## Installation
@@ -94,7 +97,17 @@ This plugin bundle provides a number of "sub-plugins" that are commonly useful i
 
 When updates are pushed out to WPGraphQL, we will update this plugin after evaluating it for compatibility and performance. If you need to run a different version of WPGraphQL, you can disable the bundled version and activate your own.
 
-### WPGraphQL Content blocks
+### WPGraphQL Preview
+
+This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
+
+**This plugin currently only works with our Next.js boilerplate** and should be disabled if you are not using it. If you are interested in using this plugin for other frontend frameworks, please see the [preview `README`][preview-readme].
+
+### Block Data Plugins
+
+There are 2 sub-plugins bundled for exposing the Gutenberg blocks - WPGraphQL Content Blocks and VIP Block Data API. In the near future, WPGraphQL Content Blocks will be deprecated in favour of just including the VIP Block Data API.
+
+##### WPGraphQL Content blocks
 
 This plugin exposes Gutenberg blocks as a field named `contentBlocks` on all post types that support a content editor:
 
@@ -125,15 +138,7 @@ This will allow you to easily map Gutenberg blocks to front-end components. Post
 
 See our [Next.js boilerplate][nextjs-boilerplate] for an example of how to use and render these blocks.
 
-*Note: In a future update, this plugin will be deprecated and eventually removed in favour of the VIP Block Data API plugin.*
-
-### WPGraphQL Preview
-
-This plugin overrides WordPress's native preview functionality and securely sends you to your decoupled frontend to preview your content. This ensures that your preview content has parity with your published content. It works by issuing a one-time use token, locked to a specific post, that can be redeemed by the frontend to obtain preview content for that post.
-
-**This plugin currently only works with our Next.js boilerplate** and should be disabled if you are not using it. If you are interested in using this plugin for other frontend frameworks, please see the [preview `README`][preview-readme].
-
-### VIP Block Data API
+##### VIP Block Data API
 
 This plugin exposes Gutenberg blocks as JSON data, with integrations for both the official WordPress REST API and WPGraphQL. The GraphQL API exposes the blocks under a field name `blocksData` on all post types that support a content editor:
 
@@ -164,6 +169,14 @@ query GetPost {
 ```
 
 Posts that do not support Gutenberg are not supported by this plugin. For more information, refer to the documentation [here](https://github.com/Automattic/vip-block-data-api).
+
+#### Which Plugin Should I Choose?
+
+We recommend the VIP Block Data API plugin, as the plugin of choice for exposing the Gutenberg blocks. 
+
+However, if you require exposing the Gutenberg blocks as HTML structured data rather than JSON data, then using the WPGraphQL Content Blocks plugin would be recommended. This would allow for the decoupled app, to easily render the blocks via the `dangerouslySetInnerHTML` method rather than having to individually design each block's corresponding component.
+
+That being said, we intend to get this feature included in the VIP Block Data API plugin in the near future. This would allow for the eventual deprecation of the WPGraphQL Content Block plugin.
 
 ## Contributing
 
