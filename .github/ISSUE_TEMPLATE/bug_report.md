@@ -3,7 +3,7 @@ name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: bug
-assignees: ingeniumed, smithjw1, alecgeatches, chriszarate
+assignees: smithjw1, alecgeatches, chriszarate
 
 ---
 
