@@ -25,8 +25,20 @@ function get_meta_key() {
  */
 function get_token_lifetime_in_seconds( $action, $post_id ) {
 	$default_lifetime = HOUR_IN_SECONDS;
+	$default_max_lifetime = 3 * HOUR_IN_SECONDS;
 
-	$max_lifetime = apply_filters( 'vip_decoupled_max_token_lifetime', 3 * HOUR_IN_SECONDS, $action, $post_id );
+	/**
+	 * Filter the maximum allowed token lifetime.
+	 *
+	 * This filter allows external plugins or custom code to modify the maximum
+	 * lifetime of a token. It provides a way to enforce an upper limit on the 
+	 * duration for which a token remains valid.
+	 *
+	 * @param int    $default_max_lifetime The default maximum token lifetime in seconds.
+	 * @param string $action               Action that will be performed with this token.
+	 * @param int    $post_id              Post ID.
+	 */
+	$max_lifetime = apply_filters( 'vip_decoupled_max_token_lifetime', $default_max_lifetime, $action, $post_id );
 
 	/**
 	 * Filter the allowed token lifetime.
