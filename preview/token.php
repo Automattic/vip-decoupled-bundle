@@ -25,7 +25,8 @@ function get_meta_key() {
  */
 function get_token_lifetime_in_seconds( $action, $post_id ) {
 	$default_lifetime = HOUR_IN_SECONDS;
-	$max_lifetime     = 3 * HOUR_IN_SECONDS;
+
+	$max_lifetime = apply_filters( 'vip_decoupled_max_token_lifetime', 3 * HOUR_IN_SECONDS, $action, $post_id );
 
 	/**
 	 * Filter the allowed token lifetime.
