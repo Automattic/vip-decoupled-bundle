@@ -33,10 +33,15 @@ function get_token_lifetime_in_seconds( $action, $post_id ) {
 	 * This filter allows external plugins or custom code to modify the maximum
 	 * lifetime of a token. It provides a way to enforce an upper limit on the 
 	 * duration for which a token remains valid.
+	 * 
+	 * Understand the security implications of this change:
+	 * the longer the token lifetime, the more security risk you bear with a compromised token.
+	 * Extend the maximum lifetime with caution.
 	 *
 	 * @param int    $default_max_lifetime The default maximum token lifetime in seconds.
 	 * @param string $action               Action that will be performed with this token.
 	 * @param int    $post_id              Post ID.
+	 * 
 	 */
 	$max_lifetime = apply_filters( 'vip_decoupled_max_token_lifetime', $default_max_lifetime, $action, $post_id );
 
