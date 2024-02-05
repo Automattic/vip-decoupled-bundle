@@ -24,7 +24,7 @@ function get_meta_key() {
  * @return int
  */
 function get_token_lifetime_in_seconds( $action, $post_id ) {
-	$default_lifetime = HOUR_IN_SECONDS;
+	$default_lifetime     = HOUR_IN_SECONDS;
 	$default_max_lifetime = 3 * HOUR_IN_SECONDS;
 
 	/**
