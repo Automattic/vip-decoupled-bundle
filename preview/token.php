@@ -41,7 +41,6 @@ function get_token_lifetime_in_seconds( $action, $post_id ) {
 	 * @param int    $default_max_lifetime The default maximum token lifetime in seconds.
 	 * @param string $action               Action that will be performed with this token.
 	 * @param int    $post_id              Post ID.
-	 * 
 	 */
 	$max_lifetime = apply_filters( 'vip_decoupled_max_token_lifetime', $default_max_lifetime, $action, $post_id );
 
