@@ -10,7 +10,6 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 > ⚠️ This project is under active development. If you are a VIP customer, please let us know if you'd like to use this plugin and we can provide additional guidance. Issues and PRs are welcome. 💖
 
 ## Table of contents
-- [Table of contents](#table-of-contents)
 - [Installation](#installation)
 	- [Plugin activation](#plugin-activation)
 - [Getting started](#getting-started)
@@ -22,8 +21,8 @@ This plugin bundle provides a number of plugins to help you quickly setup a deco
 	- [WPGraphQL](#wpgraphql)
 	- [WPGraphQL Preview](#wpgraphql-preview)
 	- [Block Data Plugins](#block-data-plugins)
-			- [WPGraphQL Content blocks](#wpgraphql-content-blocks)
-			- [VIP Block Data API](#vip-block-data-api)
+		- [WPGraphQL Content blocks](#wpgraphql-content-blocks)
+		- [VIP Block Data API](#vip-block-data-api)
 		- [Which Plugin Should I Choose?](#which-plugin-should-i-choose)
 - [Contributing](#contributing)
 
@@ -33,7 +32,7 @@ The latest version of the plugin can be downloaded from the [repository's Releas
 
 ### Plugin activation
 
-For VIP sites, we recommend [activating plugins with code][wpvip-plugin-activate]. 
+For VIP sites, we recommend [activating plugins with code][wpvip-plugin-activate].
 
 For Non-VIP sites, activate the plugin in the WordPress Admin dashboard using the following steps:
 
@@ -172,7 +171,7 @@ Posts that do not support Gutenberg are not supported by this plugin. For more i
 
 #### Which Plugin Should I Choose?
 
-We recommend the VIP Block Data API plugin, as the plugin of choice for exposing the Gutenberg blocks. 
+We recommend the VIP Block Data API plugin, as the plugin of choice for exposing the Gutenberg blocks.
 
 However, if you require exposing the Gutenberg blocks as HTML structured data rather than JSON data, then using the WPGraphQL Content Blocks plugin would be recommended. This would allow for the decoupled app, to easily render the blocks via the `dangerouslySetInnerHTML` method rather than having to individually design each block's corresponding component.
 
