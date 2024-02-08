@@ -16,7 +16,7 @@ function get_settings_config() {
 	return [
 		'cap'         => 'manage_options',
 		'defaults'    => [
-			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'preview', 'registration' ],
+			'enabled_plugins' => [ 'wpgraphql', 'blocks', 'block-data-api', 'preview', 'registration' ],
 			'allowed_origins' => [],
 		],
 		'group'       => 'VIP Decoupled',
@@ -248,7 +248,15 @@ function register_decoupled_settings_plugin_fields() {
 				is_plugin_enabled( 'blocks' ),
 				! $wpgraphql_enabled,
 				'WPGraphQL Content Blocks',
-				'exposes Gutenberg blocks as structured data, allowing you to map blocks to frontend components.'
+				'exposes Gutenberg blocks as structured data (HTML and JSON), allowing you to map blocks to frontend components.'
+			);
+			render_checkbox_field(
+				$name,
+				'block-data-api',
+				is_plugin_enabled( 'block-data-api' ),
+				false,
+				'VIP Block Data API',
+				'exposes Gutenberg blocks as JSON data, with integrations for both the official WordPress REST API and WPGraphQL. This will allow you to map blocks to frontend components.'
 			);
 			render_checkbox_field(
 				$name,
@@ -328,7 +336,7 @@ add_action( 'admin_init', __NAMESPACE__ . '\\register_decoupled_settings_cors_fi
  * Sanitize the settings before saving.
  *
  * @param array $value the value that's to be sanitized, before saving.
- * 
+ *
  * @return array the sanitized value.
  */
 function sanitize_decoupled_settings( $value ) {

@@ -1,0 +1,40 @@
+{
+	"name": "automattic/vip-block-data-api",
+	"description": "A WordPress plugin that provides an API to retrieve Gutenberg content as structured JSON",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"phpcs": "phpcs",
+		"phpcs-fix": "phpcbf",
+		"test": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-block-data-api ./vendor/bin/phpunit",
+		"test-multisite": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-block-data-api /bin/bash -c 'WP_MULTISITE=1 ./vendor/bin/phpunit'",
+		"test-watch": [
+			"Composer\\Config::disableProcessTimeout",
+			"nodemon -w ./ --ignore vendor/ -e php --exec 'composer run test'"
+		]
+	},
+	"require": {
+		"php": ">=8.0",
+		"masterminds/html5": "^2.8",
+		"symfony/dom-crawler": "^6.0",
+		"symfony/css-selector": "^6.0"
+	},
+	"require-dev": {
+		"phpunit/phpunit": "^9.5",
+		"wp-phpunit/wp-phpunit": "^6.3",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"automattic/vipwpcs": "^3.0",
+		"yoast/phpunit-polyfills": "^2.0",
+		"dms/phpunit-arraysubset-asserts": "^0.5.0"
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"mnsami/composer-custom-directory-installer": false
+		},
+		"platform": {
+			"php": "8.0.2"
+		},
+		"sort-packages": true
+	}
+}
