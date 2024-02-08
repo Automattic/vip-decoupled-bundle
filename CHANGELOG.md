@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.0
+
+- [**VIP Block Data API**](https://github.com/Automattic/vip-block-data-api) plugin added to bundle as an alternative to Content Blocks.
+
 ## 1.1.0
 
 - **WPGraphQL:** Updated to v1.19.0.
@@ -14,7 +18,7 @@ This marks the release of v1.0 of the plugin.
 
 - Adjusted the minimum support version for WP, PHP as well as the WP version that it's tested upto.
 - Added a link to this repo, in the plugin's uri so it's easy to navigate to.
-- Added installation instructions in the README. 
+- Added installation instructions in the README.
 
 ## 0.2.0
 
