@@ -1,7 +1,7 @@
 <?php
 /**
  * The preview module.
- * 
+ *
  * @package vip-bundle-decoupled
  */
 
@@ -34,9 +34,25 @@ function redirect_to_preview() {
 			exit;
 		}
 
-		$preview_url = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
-		wp_safe_redirect( $preview_url, 302 );
-		exit;
+		$preview_url_home = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
+		/**
+		 * Filter preview URL before redirect.
+		 *
+		 * @param  $preview_url     Generated preview URL, based on home_url().
+		 * @param  $preview_token   Token used to view the preview.
+		 * @param  $post_id         ID of the post being previewed.
+		 */
+		$preview_url = apply_filters( 'vip_decoupled_preview_url', $preview_url_home, $preview_token, $post->ID );
+
+		if ( $preview_url === $preview_url_home ) {
+			// Use wp_safe_redirect by default, as this can potentially stop a malicious redirect.
+			wp_safe_redirect( $preview_url, 302 );
+			exit;
+		} else {
+			// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Allow cross-domain redirects if the filter is used.
+			wp_redirect( $preview_url, 302 );
+			exit;
+		}
 	}
 }
 add_action( 'template_redirect', __NAMESPACE__ . '\\redirect_to_preview', 10, 0 );
