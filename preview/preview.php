@@ -1,7 +1,7 @@
 <?php
 /**
  * The preview module.
- * 
+ *
  * @package vip-bundle-decoupled
  */
 
@@ -35,7 +35,16 @@ function redirect_to_preview() {
 		}
 
 		$preview_url = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
-		wp_safe_redirect( $preview_url, 302 );
+		/**
+		 * Filter preview URL before redirect.
+		 *
+		 * @param  $preview_url     Generated preview URL, based on home_url().
+		 * @param  $preview_token   Token used to view the preview.
+		 * @param  $post_id         ID of the post being previewed.
+		 */
+		$preview_url = apply_filters( 'vip_decoupled_preview_url', $preview_url, $preview_token, $post->ID );
+
+		wp_redirect( $preview_url, 302 );
 		exit;
 	}
 }
