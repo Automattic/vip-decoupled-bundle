@@ -34,7 +34,7 @@ function redirect_to_preview() {
 			exit;
 		}
 
-		$preview_url = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
+		$preview_url_home = home_url( sprintf( '/preview/%s/%d', $preview_token, $post->ID ) );
 		/**
 		 * Filter preview URL before redirect.
 		 *
@@ -42,10 +42,20 @@ function redirect_to_preview() {
 		 * @param  $preview_token   Token used to view the preview.
 		 * @param  $post_id         ID of the post being previewed.
 		 */
-		$preview_url = apply_filters( 'vip_decoupled_preview_url', $preview_url, $preview_token, $post->ID );
+		$preview_url = apply_filters( 'vip_decoupled_preview_url', $preview_url_home, $preview_token, $post->ID );
 
-		wp_redirect( $preview_url, 302 );
-		exit;
+		if ( $preview_url === $preview_url_home ) {
+			// Use wp_safe_redirect by default, as this can potentially stop a malicious redirect.
+			wp_safe_redirect( $preview_url, 302 );
+			exit;
+		} else {
+			// If the URL was modified by the above filter, use wp_redirect to allow previewing on another domain.
+
+			// Allow cross-domain redirects if the filter is used.
+			// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			wp_redirect( $preview_url, 302 );
+			exit;
+		}
 	}
 }
 add_action( 'template_redirect', __NAMESPACE__ . '\\redirect_to_preview', 10, 0 );
