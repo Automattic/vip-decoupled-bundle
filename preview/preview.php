@@ -49,10 +49,7 @@ function redirect_to_preview() {
 			wp_safe_redirect( $preview_url, 302 );
 			exit;
 		} else {
-			// If the URL was modified by the above filter, use wp_redirect to allow previewing on another domain.
-
-			// Allow cross-domain redirects if the filter is used.
-			// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+			// phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- Allow cross-domain redirects if the filter is used.
 			wp_redirect( $preview_url, 302 );
 			exit;
 		}
