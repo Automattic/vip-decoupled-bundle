@@ -1,7 +1,0 @@
-#!/bin/sh
-set -eu
-
-git diff -z --staged --name-only --diff-filter=ACMR | \
-    xargs -0 composer phpcs
-
-git update-index --again
