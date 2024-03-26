@@ -14,7 +14,7 @@
         "phpcs-fix": "phpcbf",
         "test": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle ./vendor/bin/phpunit -c phpunit.xml.dist",
         "test-multisite": "wp-env run tests-cli --env-cwd=wp-content/plugins/vip-decoupled-bundle ./vendor/bin/phpunit -c tests/phpunit/multisite.xml",
-        "post-install-cmd": "git rev-parse --is-inside-work-tree > /dev/null 2>&1 && git config core.hooksPath .githooks || exit 0"
+        "post-update-cmd": "git rev-parse --is-inside-work-tree > /dev/null 2>&1 && git config core.hooksPath .githooks || exit 0"
     },
     "license": "GPL-2.0-or-later",
     "config": {
