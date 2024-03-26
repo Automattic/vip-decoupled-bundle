@@ -1,0 +1,4 @@
+#! /bin/sh
+
+composer phpcs-fix
+git update-index --again
