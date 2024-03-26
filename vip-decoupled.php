@@ -91,3 +91,5 @@ function force_enable_schema_introspection( $value, $default, $option_name ) {
 	return $value;
 }
 add_filter( 'graphql_get_setting_section_field_value', __NAMESPACE__ . '\\force_enable_schema_introspection', 10, 3 );
+
+require_once __DIR__ . '/blocks/vip-smart-layout.php';
