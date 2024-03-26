@@ -4,7 +4,7 @@
  * Functions to register client-side assets (scripts and stylesheets) for the
  * Gutenberg block.
  *
- * @package eethuis
+ * @package vip-bundle-decoupled
  */
 
 /**
@@ -49,7 +49,7 @@ function vip_smart_layout_block_init()
 		filemtime("{$dir}/{$style_css}")
 	);
 
-	register_block_type('eethuis/vip-smart-layout', [
+	register_block_type( 'vip-bundle-decoupled/vip-smart-layout', [
 		'editor_script' => 'vip-smart-layout-block-editor',
 		'editor_style'  => 'vip-smart-layout-block-editor',
 		'style'         => 'vip-smart-layout-block',
