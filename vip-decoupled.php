@@ -44,6 +44,13 @@ if ( is_plugin_enabled( 'blocks' ) ) {
 }
 
 /**
+ * Register custom blocks.
+ */
+if ( is_plugin_enabled( 'blocks' ) ) {
+	require_once __DIR__ . '/blocks/vip-smart-layout.php';
+}
+
+/**
  * VIP Block Data API.
  */
 if ( is_plugin_enabled( 'block-data-api' ) ) {
@@ -91,5 +98,3 @@ function force_enable_schema_introspection( $value, $default, $option_name ) {
 	return $value;
 }
 add_filter( 'graphql_get_setting_section_field_value', __NAMESPACE__ . '\\force_enable_schema_introspection', 10, 3 );
-
-require_once __DIR__ . '/blocks/vip-smart-layout.php';
