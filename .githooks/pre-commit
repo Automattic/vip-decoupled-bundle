@@ -1,4 +1,7 @@
-#! /bin/sh
+#!/bin/sh
+set -eu
 
-composer phpcs-fix
+git diff -z --staged --name-only --diff-filter=ACMR | \
+    xargs -0 composer phpcs
+
 git update-index --again
