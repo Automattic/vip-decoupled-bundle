@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+- [**Add preview URL filter**](https://github.com/Automattic/vip-decoupled-bundle/pull/81): Adds the ability to modify preview URL destinations.
+- [**Update VIP Block Data API v1.2.1**](https://github.com/Automattic/vip-decoupled-bundle/pull/82): Update the VIP Block Data API to `1.2.1`, which [supports `rich-text` attributes](https://github.com/Automattic/vip-block-data-api/releases/tag/1.2.1) in WordPress 6.5.
+
 ## 1.2.0
 
 - [**VIP Block Data API**](https://github.com/Automattic/vip-block-data-api) plugin added to bundle as an alternative to Content Blocks.
