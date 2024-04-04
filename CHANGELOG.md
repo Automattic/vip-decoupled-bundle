@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- [**Update WPGraphQL to v1.22.1**](https://github.com/Automattic/vip-decoupled-bundle/pull/85): Updates WPGraphQL to v1.22.1
+
 ## 1.2.1
 
 - [**Add preview URL filter**](https://github.com/Automattic/vip-decoupled-bundle/pull/81): Adds the ability to modify preview URL destinations.
