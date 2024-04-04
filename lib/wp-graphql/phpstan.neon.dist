@@ -1,0 +1,42 @@
+parameters:
+    level: 8
+    dynamicConstantNames:
+        - WPGRAPHQL_AUTOLOAD
+    treatPhpDocTypesAsCertain: false
+    inferPrivatePropertyTypeFromConstructor: true
+    checkAlwaysTrueCheckTypeFunctionCall: true
+    checkAlwaysTrueInstanceof: true
+    checkAlwaysTrueStrictComparison: true
+    checkExplicitMixedMissingReturn: true
+    checkFunctionNameCase: true
+    checkInternalClassCaseSensitivity: true
+    checkMissingIterableValueType: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    polluteScopeWithAlwaysIterableForeach: false
+    polluteScopeWithLoopInitialAssignments: false
+    reportAlwaysTrueInLastCondition: true
+    reportStaticMethodSignatures: true
+    reportWrongPhpDocTypeInVarTag: true
+    stubFiles:
+        # Simulate added properties
+        - phpstan/class-wp-post-type.php
+        - phpstan/class-wp-taxonomy.php
+        - phpstan/class-wp-dependency.php
+    bootstrapFiles:
+        - phpstan/constants.php
+        - wp-graphql.php
+        - access-functions.php
+        - activation.php
+        - deactivation.php
+        - constants.php
+    paths:
+        - wp-graphql.php
+        - access-functions.php
+        - activation.php
+        - deactivation.php
+        - src/
+    excludePaths:
+      analyseAndScan:
+        - */node_modules/*
+        - */vendor/*
+    ignoreErrors:
