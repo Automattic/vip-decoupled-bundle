@@ -30,10 +30,10 @@ require_once __DIR__ . '/admin/admin.php';
 require_once __DIR__ . '/settings/settings.php';
 
 /**
- * WPGraphQL 1.19.0.
+ * WPGraphQL
  */
 if ( is_plugin_enabled( 'wpgraphql' ) ) {
-	require_once __DIR__ . '/lib/wp-graphql-1.19.0/wp-graphql.php';
+	require_once __DIR__ . '/lib/wp-graphql/wp-graphql.php';
 }
 
 /**
