@@ -13,7 +13,13 @@ This plugin overrides WordPress's native preview functionality and securely send
 
 Default: `3600` (one hour in seconds)
 
-Filter the token lifetime (expiration window).
+Filter the token lifetime (expiration window). Note that this is subject to a (filterable) maximum (see below).
+
+### `vip_decoupled_max_token_lifetime`
+
+Default: `10800` (three hours in seconds)
+
+Filter the maximum allowed token lifetime. The default value represents a reasonable trade-off between utility and security, but longer lifetimes may represent an acceptable risk for some organizations.
 
 ### `vip_decoupled_token_expire_on_use`
 
