@@ -4,6 +4,7 @@ namespace WPGraphQL\Registry;
 
 use GraphQL\Error\Error;
 use GraphQL\Type\Definition\Type;
+use WPGraphQL;
 use WPGraphQL\Data\DataSource;
 use WPGraphQL\Mutation\CommentCreate;
 use WPGraphQL\Mutation\CommentDelete;
@@ -144,7 +145,6 @@ class TypeRegistry {
 	 */
 	protected $types;
 
-
 	/**
 	 * The loaders needed to register types
 	 *
@@ -170,7 +170,6 @@ class TypeRegistry {
 	 * @var string[]
 	 */
 	protected $excluded_types = null;
-
 
 	/**
 	 * Stores a list of mutation names that should be excluded from the schema, along with their generated input and payload types.
@@ -409,10 +408,10 @@ class TypeRegistry {
 		 *
 		 * @var \WP_Post_Type[] $allowed_post_types
 		 */
-		$allowed_post_types = \WPGraphQL::get_allowed_post_types( 'objects' );
+		$allowed_post_types = WPGraphQL::get_allowed_post_types( 'objects' );
 
 		/** @var \WP_Taxonomy[] $allowed_taxonomies */
-		$allowed_taxonomies = \WPGraphQL::get_allowed_taxonomies( 'objects' );
+		$allowed_taxonomies = WPGraphQL::get_allowed_taxonomies( 'objects' );
 
 		foreach ( $allowed_post_types as $post_type_object ) {
 			PostObject::register_types( $post_type_object );
@@ -716,7 +715,7 @@ class TypeRegistry {
 			return $this->prepare_type( $type_name, $config );
 		};
 
-		if ( is_array( $config ) && isset( $config['eagerlyLoadType'] ) && true === $config['eagerlyLoadType'] && ! isset( $this->eager_type_map[ $this->format_key( $type_name ) ] ) ) {
+		if ( WPGraphQL::is_introspection_query() && is_array( $config ) && isset( $config['eagerlyLoadType'] ) && true === $config['eagerlyLoadType'] && ! isset( $this->eager_type_map[ $this->format_key( $type_name ) ] ) ) {
 			$this->eager_type_map[ $this->format_key( $type_name ) ] = $this->format_key( $type_name );
 		}
 	}
@@ -1089,7 +1088,28 @@ class TypeRegistry {
 					return $fields;
 				}
 
+				// if a field has already been registered with the same name output a debug message
 				if ( isset( $fields[ $field_name ] ) ) {
+
+					// if the existing field is a connection type
+					// and the new field is also a connection type
+					// and the toType is the same for both
+					// then we can allow the duplicate field
+					if (
+						isset(
+							$fields[ $field_name ]['isConnectionField'],
+							$config['isConnectionField'],
+							$fields[ $field_name ]['toType'],
+							$config['toType'],
+							$fields[ $field_name ]['connectionTypeName'],
+							$config['connectionTypeName']
+						) &&
+						$fields[ $field_name ]['toType'] === $config['toType'] &&
+						$fields[ $field_name ]['connectionTypeName'] === $config['connectionTypeName']
+					) {
+						return $fields;
+					}
+
 					graphql_debug(
 						sprintf(
 							// translators: %1$s is the field name, %2$s is the type name.
@@ -1098,9 +1118,11 @@ class TypeRegistry {
 							$type_name
 						),
 						[
-							'type'       => 'DUPLICATE_FIELD',
-							'field_name' => $field_name,
-							'type_name'  => $type_name,
+							'type'            => 'DUPLICATE_FIELD',
+							'field_name'      => $field_name,
+							'type_name'       => $type_name,
+							'existing_field'  => $fields[ $field_name ],
+							'duplicate_field' => $config,
 						]
 					);
 					return $fields;

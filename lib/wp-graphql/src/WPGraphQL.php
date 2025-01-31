@@ -21,7 +21,6 @@ use WPGraphQL\Utils\Preview;
  */
 final class WPGraphQL {
 
-
 	/**
 	 * Stores the instance of the WPGraphQL class
 	 *
@@ -63,7 +62,12 @@ final class WPGraphQL {
 	/**
 	 * @var bool
 	 */
-	protected static $is_graphql_request;
+	protected static $is_graphql_request = false;
+
+	/**
+	 * @var bool
+	 */
+	protected static $is_introspection_query = false;
 
 	/**
 	 * The instance of the WPGraphQL object
@@ -141,10 +145,30 @@ final class WPGraphQL {
 	}
 
 	/**
-	 * @return bool
+	 * Whether the request is a graphql request or not
 	 */
-	public static function is_graphql_request() {
+	public static function is_graphql_request(): bool {
 		return self::$is_graphql_request;
+	}
+
+	/**
+	 * Set whether the request is an introspection query or not
+	 *
+	 * @param bool $is_introspection_query
+	 *
+	 * @since todo
+	 */
+	public static function set_is_introspection_query( bool $is_introspection_query = false ): void {
+		self::$is_introspection_query = $is_introspection_query;
+	}
+
+	/**
+	 * Whether the request is an introspection query or not (query for __type or __schema)
+	 *
+	 * @since todo
+	 */
+	public static function is_introspection_query(): bool {
+		return self::$is_introspection_query;
 	}
 
 	/**
@@ -204,6 +228,7 @@ final class WPGraphQL {
 
 		// Throw an exception
 		add_action( 'do_graphql_request', [ $this, 'min_php_version_check' ] );
+		add_action( 'do_graphql_request', [ $this, 'introspection_check' ], 10, 4 );
 
 		// Initialize Admin functionality
 		add_action( 'after_setup_theme', [ $this, 'init_admin' ] );
@@ -221,6 +246,41 @@ final class WPGraphQL {
 	}
 
 	/**
+	 * @param ?string                         $query     The GraphQL query
+	 * @param ?string                         $operation The name of the operation
+	 * @param ?array<mixed>                   $variables Variables to be passed to your GraphQL
+	 *                                                   request
+	 * @param \GraphQL\Server\OperationParams $params    The Operation Params. This includes any
+	 *                                                   extra params,
+	 *
+	 * @throws \GraphQL\Error\SyntaxError
+	 * @throws \Exception
+	 */
+	public function introspection_check( ?string $query, ?string $operation, ?array $variables, \GraphQL\Server\OperationParams $params ): void {
+
+		if ( empty( $query ) ) {
+			return;
+		}
+
+		$ast              = \GraphQL\Language\Parser::parse( $query );
+		$is_introspection = false;
+
+		\GraphQL\Language\Visitor::visit(
+			$ast,
+			[
+				'Field' => static function ( \GraphQL\Language\AST\FieldNode $node ) use ( &$is_introspection ) {
+					if ( '__schema' === $node->name->value || '__type' === $node->name->value ) {
+						$is_introspection = true;
+						return \GraphQL\Language\Visitor::stop();
+					}
+				},
+			]
+		);
+
+		self::set_is_introspection_query( $is_introspection );
+	}
+
+	/**
 	 * Check if the minimum PHP version requirement is met before execution begins.
 	 *
 	 * If the server is running a lower version than required, throw an exception and prevent
@@ -234,7 +294,7 @@ final class WPGraphQL {
 			throw new \Exception(
 				esc_html(
 					sprintf(
-						// translators: %1$s is the current PHP version, %2$s is the minimum required PHP version.
+					// translators: %1$s is the current PHP version, %2$s is the minimum required PHP version.
 						__( 'The server\'s current PHP version %1$s is lower than the WPGraphQL minimum required version: %2$s', 'wp-graphql' ),
 						PHP_VERSION,
 						GRAPHQL_MIN_PHP_VERSION
@@ -335,6 +395,24 @@ final class WPGraphQL {
 			},
 			10,
 			3
+		);
+
+		/**
+		 * Prevent WPML from redirecting within WPGraphQL requests
+		 *
+		 * @see https://github.com/wp-graphql/wp-graphql/issues/1626#issue-769089073
+		 * @since 1.27.0
+		 */
+		add_filter(
+			'wpml_is_redirected',
+			static function ( bool $is_redirect ) {
+				if ( is_graphql_request() ) {
+					return false;
+				}
+				return $is_redirect;
+			},
+			10,
+			1
 		);
 	}
 
@@ -782,15 +860,18 @@ final class WPGraphQL {
 	/**
 	 * Return the static schema if there is one
 	 *
-	 * @return string|null
+	 * @return ?string
 	 */
 	public static function get_static_schema() {
-		$schema = null;
-		if ( file_exists( WPGRAPHQL_PLUGIN_DIR . 'schema.graphql' ) && ! empty( file_get_contents( WPGRAPHQL_PLUGIN_DIR . 'schema.graphql' ) ) ) {
-			$schema = file_get_contents( WPGRAPHQL_PLUGIN_DIR . 'schema.graphql' );
+		$schema_file = WPGRAPHQL_PLUGIN_DIR . 'schema.graphql';
+
+		if ( ! file_exists( $schema_file ) ) {
+			return null;
 		}
 
-		return $schema;
+		$schema = file_get_contents( WPGRAPHQL_PLUGIN_DIR . 'schema.graphql' );
+
+		return ! empty( $schema ) ? $schema : null;
 	}
 
 	/**

@@ -281,8 +281,6 @@ class NodeResolver {
 				return null;
 			}
 
-
-
 			return ! empty( $queried_object->name ) ? $this->context->get_loader( 'post_type' )->load_deferred( $queried_object->name ) : null;
 		}
 
@@ -389,7 +387,6 @@ class NodeResolver {
 		$this->wp->query_vars['uri'] = $uri;
 
 		// Process PATH_INFO, REQUEST_URI, and 404 for permalinks.
-
 
 		// Fetch the rewrite rules.
 		$rewrite = $wp_rewrite->wp_rewrite_rules();
@@ -594,7 +591,6 @@ class NodeResolver {
 			$this->wp->query_vars['error'] = $error;
 		}
 
-
 		// if the parsed url is ONLY a query, unset the pagename query var
 		if ( isset( $this->wp->query_vars['pagename'], $parsed_url['query'] ) && ( $parsed_url['query'] === $this->wp->query_vars['pagename'] ) ) {
 			unset( $this->wp->query_vars['pagename'] );
@@ -666,7 +662,7 @@ class NodeResolver {
 		$comment_match = [];
 		// look for a #comment-{$id} anywhere in the uri.
 		if ( preg_match( '/#comment-(\d+)/', $uri, $comment_match ) ) {
-			$comment_id = isset( $comment_match[1] ) ? absint( $comment_match[1] ) : null;
+			$comment_id = absint( $comment_match[1] );
 
 			return ! empty( $comment_id ) ? $comment_id : null;
 		}
