@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.3
+
+- **WPGraphQL:** Updated to v1.29.3.
+- **VIP Block Data API:** Updated to v1.4.3.
+
 ## 1.2.2
 
 - [**Update WPGraphQL to v1.22.1**](https://github.com/Automattic/vip-decoupled-bundle/pull/85): Updates WPGraphQL to v1.22.1

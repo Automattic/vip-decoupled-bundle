@@ -16,6 +16,13 @@ namespace WPGraphQL\Admin;
 class AdminNotices {
 
 	/**
+	 * Stores the singleton instance of the class
+	 *
+	 * @var self|null
+	 */
+	private static $instance = null;
+
+	/**
 	 * Stores the admin notices to display
 	 *
 	 * @var array<string,array<string,mixed>>
@@ -26,6 +33,34 @@ class AdminNotices {
 	 * @var array<string>
 	 */
 	protected $dismissed_notices = [];
+
+	/**
+	 * Private constructor to prevent direct instantiation
+	 */
+	private function __construct() {
+		// Initialize the class (can move code from init() here if desired)
+	}
+
+	/**
+	 * Prevent cloning the instance
+	 */
+	public function __clone() {}
+
+	/**
+	 * Prevent unserializing the instance
+	 */
+	public function __wakeup() {}
+
+	/**
+	 * Get the singleton instance of the class
+	 */
+	public static function get_instance(): self {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+			self::$instance->init();
+		}
+		return self::$instance;
+	}
 
 	/**
 	 * Initialize the Admin Notices class
@@ -206,8 +241,8 @@ class AdminNotices {
 
 		foreach ( $menu as $key => $item ) {
 			if ( 'graphiql-ide' === $item[2] ) {
-				// phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-				$menu[ $key ][0] .= ' <span class="update-plugins count-' . absint( $notice_count ) . '>"><span class="plugin-count">' . absint( $notice_count ) . '</span></span>';
+                // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
+				$menu[ $key ][0] .= ' <span class="update-plugins count-' . absint( $notice_count ) . '"><span class="plugin-count">' . absint( $notice_count ) . '</span></span>';
 				break;
 			}
 		}
@@ -249,6 +284,16 @@ class AdminNotices {
 		</style>
 		<?php
 		$count = 0;
+
+		/**
+		 * Fires before the admin notices are rendered.
+		 *
+		 * @param array<string,mixed> $notices The notices to be rendered
+		 *
+		 * @since v1.23.0
+		 */
+		do_action( 'graphql_admin_notices_render_notices', $notices );
+
 		foreach ( $notices as $notice_slug => $notice ) {
 			$type = $notice['type'] ?? 'info';
 			?>
@@ -260,7 +305,8 @@ class AdminNotices {
 			<div id="wpgraphql-admin-notice-<?php echo esc_attr( $notice_slug ); ?>" class="wpgraphql-admin-notice notice notice-<?php echo esc_attr( $type ); ?> <?php echo $this->is_notice_dismissable( $notice ) ? 'is-dismissable' : ''; ?>">
 				<p><?php echo ! empty( $notice['message'] ) ? wp_kses_post( $notice['message'] ) : ''; ?></p>
 				<?php
-				if ( $this->is_notice_dismissable( $notice ) ) {
+				$is_dismissable = $this->is_notice_dismissable( $notice );
+				if ( $is_dismissable ) {
 					$dismiss_acf_nonce = wp_create_nonce( 'wpgraphql_disable_notice_nonce' );
 					$dismiss_url       = add_query_arg(
 						[
@@ -275,6 +321,17 @@ class AdminNotices {
 				<?php } ?>
 			</div>
 			<?php
+			/**
+			 * Fires for each admin notice that is rendered.
+			 *
+			 * @param string $notice_slug The slug of the notice
+			 * @param array<mixed> $notice The notice to be rendered
+			 * @param bool $is_dismissable Whether the notice is dismissable or not
+			 * @param int $count The count of the notice
+			 *
+			 * @since v1.23.0
+			 */
+			do_action( 'graphql_admin_notices_render_notice', $notice_slug, $notice, $is_dismissable, $count );
 			++$count;
 		}
 	}
@@ -301,7 +358,19 @@ class AdminNotices {
 
 		$current_page_id = $screen->id;
 
-		return in_array( $current_page_id, $allowed_pages, true );
+		$is_allowed_admin_page = in_array( $current_page_id, $allowed_pages, true );
+
+		/**
+		 * Filter to determine if the current admin page is within the scope of the plugin's own pages.
+		 * This filter can be used to add additional pages to the list of allowed pages.
+		 *
+		 * The filter receives the following arguments:
+		 *
+		 * @param bool $is_plugin_scoped_page True if the current page is within scope of the plugin's pages.
+		 * @param string $current_page_id The ID of the current admin page.
+		 * @param array<string> $allowed_pages The list of allowed pages.
+		 */
+		return apply_filters( 'graphql_admin_notices_is_allowed_admin_page', $is_allowed_admin_page, $current_page_id, $allowed_pages );
 	}
 
 	/**

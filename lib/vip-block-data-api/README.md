@@ -28,6 +28,7 @@ This plugin is currently developed for use on WordPress sites hosted on the VIP 
     - [Setup](#setup)
     - [Usage](#usage-1)
     - [Block Attributes](#block-attributes)
+    - [Complex attributes](#complex-attributes)
     - [Example: Simple nested blocks: `core/list` and `core/quote`](#example-simple-nested-blocks-corelist-and-corequote)
 - [API Consumption](#api-consumption)
   - [Preact](#preact)
@@ -42,13 +43,15 @@ This plugin is currently developed for use on WordPress sites hosted on the VIP 
   - [Example Post](#example-post)
   - [`include`](#include)
   - [`exclude`](#exclude)
-- [Code Filters](#code-filters)
+- [Filters and actions](#filters-and-actions)
   - [GraphQL](#graphql-1)
   - [REST](#rest-1)
   - [`vip_block_data_api__rest_validate_post_id`](#vip_block_data_api__rest_validate_post_id)
   - [`vip_block_data_api__rest_permission_callback`](#vip_block_data_api__rest_permission_callback)
   - [`vip_block_data_api__allow_block`](#vip_block_data_api__allow_block)
   - [`vip_block_data_api__sourced_block_result`](#vip_block_data_api__sourced_block_result)
+  - [`vip_block_data_api__before_parse_post_content`](#vip_block_data_api__before_parse_post_content)
+  - [`vip_block_data_api__after_parse_blocks`](#vip_block_data_api__after_parse_blocks)
 - [Analytics](#analytics)
 - [Caching on WPVIP](#caching-on-wpvip)
 - [Errors and Warnings](#errors-and-warnings)
@@ -294,31 +297,25 @@ The GraphQL API requires some setup before it can be it can be used.
 
 The Block Data API integrates with **WPGraphQL** to provide a GraphQL API. It is necessary to have [WPGraphQL installed and activated][wpgraphql-install].
 
-Once WPGraphQL has been installed and setup, a new field called `blocksData` will be available for post types that provide content, like posts, pages, etc.
+Once WPGraphQL has been installed and setup, a new field called `blocksDataV2` will be available for post types that provide content, like posts, pages, etc.
+
+For information on the legacy `blocksData` (v1) field, see [the README from plugin version `1.2.4`][repo-readme-1.2.4].
 
 #### Usage
 
-The `blocksData` field provides block data for post types that support it. Here is an example query:
+The `blocksDataV2` field provides block data for post types that support it. Here is an example query:
 
 ```graphQL
 query NewQuery {
-  post(id: "1", idType: DATABASE_ID) {
-    blocksData {
+  post(id: 1, idType: DATABASE_ID) {
+    blocksDataV2 {
       blocks {
-        id
         name
+        id
+        parentId
         attributes {
           name
           value
-        }
-        innerBlocks {
-          name
-          parentId
-          id
-          attributes {
-            name
-            value
-          }
         }
       }
     }
@@ -326,34 +323,7 @@ query NewQuery {
 }
 ```
 
-Here, the `id` and `parentId` fields are dynamically generated, unique IDs that help to identify parent-child relationships in the `innerBlocks` under a block, in the overall block structure. The resulting `innerBlocks` is a flattened list that can be untangled using the combination of `id` and `parentId` fields. This is helpful in being able to give back a complicated nesting structure, without having any knowledge as to how deep this nesting goes. For more information on recreating `innerBlocks`, see [Block Hierarchy Reconstruction](#block-hierarchy-reconstruction).
-
-This behaviour can be changed by passing in `flatten: false`. This would give back the same block hierarchy as shown in the block editor, without the `parentId` being set. In addition, the correct depth would need to be requested in the query so that the entire block hierarchy can be given back. By default, `flatten` is set to true and so can be skipped if flattenining the innerBlocks is the intended behaviour. The same query above, would now look like:
-
-```graphQL
-query NewQuery {
-  post(id: "1", idType: DATABASE_ID) {
-    blocksData {
-      blocks(flatten: false) {
-        id
-        name
-        attributes {
-          name
-          value
-        }
-        innerBlocks {
-          attributes {
-            name
-            value
-          }
-          name
-          id
-        }
-      }
-    }
-  }
-}
-```
+The `id` and `parentId` fields are dynamically generated unique IDs that help to identify parent-child relationships between blocks. The resulting set of blocks is a flattened list that can be untangled using the combination of `id` and `parentId` fields. This allows a flat query to return a complex nested block structure. For more information on recreating `innerBlocks` from IDs, see the example code in [Block Hierarchy Reconstruction](#block-hierarchy-reconstruction).
 
 #### Block Attributes
 
@@ -373,6 +343,76 @@ The attributes of a block in GraphQL are available in a list of `name` / `value`
 ```
 
 This is used instead of a key-value structure. This is a trade-off that makes it easy to retrieve block attributes without specifying the the block type ahead of time, but attribute type information is lost.
+
+
+#### Complex attributes
+
+Some block attributes contain arrays or complex nested values. Demonstrated below, [the `core/table` block uses an array of objects][gutenberg-code-table-body] to represent head, body, and footer cell contents. The GraphQL Block Data API implementation represents these attributes as JSON-encoded strings along with the `isValueJsonEncoded` boolean field. When `isValueJsonEncoded` is `true`, an attribute's value must be JSON decoded to get the original complex value.
+
+For example, using this table:
+
+![Example core/table block with a two header cells and two body cells][media-example-table]
+
+We can query for attributes along with the `isValueJsonEncoded` field in a GraphQL query:
+
+```graphql
+query PostQuery {
+  post(id: 1, idType: DATABASE_ID) {
+    blocksDataV2 {
+      blocks {
+        name
+        id
+        parentId
+        attributes {
+          name
+          value
+          isValueJsonEncoded
+        }
+      }
+    }
+  }
+}
+```
+
+The result will contain JSON-encoded attributes designated by the `isValueJsonEncoded` field:
+
+```json
+{
+  "data": {
+    "post": {
+      "blocksDataV2": {
+        "blocks": [
+          {
+            "name": "core/table",
+            "attributes": [
+              {
+                "name": "hasFixedLayout",
+                "value": "false",
+                "isValueJsonEncoded": true
+              },
+              {
+                "name": "head",
+                "value": "[{\"cells\":[{\"content\":\"Header A\",\"tag\":\"th\"},{\"content\":\"Header B\",\"tag\":\"th\"}]}]",
+                "isValueJsonEncoded": true
+              },
+              {
+                "name": "body",
+                "value": "[{\"cells\":[{\"content\":\"Value 1\",\"tag\":\"td\"},{\"content\":\"Value 2\",\"tag\":\"td\"}]}]",
+                "isValueJsonEncoded": true
+              },
+              {
+                "name": "foot",
+                "value": "[]",
+                "isValueJsonEncoded": true
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+```
 
 ---
 
@@ -414,22 +454,14 @@ This is used instead of a key-value structure. This is a trade-off that makes it
 ```graphQL
 query NewQuery {
   post(id: "1", idType: DATABASE_ID) {
-    blocksData {
+    blocksDataV2 {
       blocks {
-        id
         name
+        id
+        parentId
         attributes {
           name
           value
-        }
-        innerBlocks {
-          name
-          parentId
-          id
-          attributes {
-            name
-            value
-          }
         }
       }
     }
@@ -444,75 +476,48 @@ query NewQuery {
 {
   "data": {
     "post": {
-      "blocksData": {
+      "blocksDataV2": {
         "blocks": [
           {
-            "attributes": [
-              {
-                "name": "ordered",
-                "value": ""
-              },
-              {
-                "name": "values",
-                "value": ""
-              }
-            ],
-            "id": "1",
             "name": "core/list",
-            "innerBlocks": [
-              {
-                "id": "2",
-                "name": "core/list-item",
-                "parentId": "1",
-                "attributes": [
-                  {
-                    "name": "content",
-                    "value": "This is item 1 in the list"
-                  }
-                ]
-              },
-              {
-                "id": "3",
-                "name": "core/list-item",
-                "parentId": "1",
-                "attributes": [
-                  {
-                    "name": "content",
-                    "value": "This is item 2 in the list"
-                  }
-                ]
-              }
+            "id": "1",
+            "parentId": null,
+            "attributes": [
+              { "name": "ordered", "value": "false" },
+              { "name": "values", "value": "" }
             ]
           },
           {
+            "name": "core/list-item",
+            "id": "2",
+            "parentId": "1",
             "attributes": [
-              {
-                "name": "value",
-                "value": ""
-              },
-              {
-                "name": "citation",
-                "value": ""
-              }
-            ],
-            "id": "4",
+              { "name": "content", "value": "This is item 1 in the list" }
+            ]
+          },
+          {
+            "name": "core/list-item",
+            "id": "3",
+            "parentId": "1",
+            "attributes": [
+              { "name": "content", "value": "This is item 2 in the list" }
+            ]
+          },
+          {
             "name": "core/quote",
-            "innerBlocks": [
-              {
-                "id": "5",
-                "name": "core/paragraph",
-                "parentId": "4",
-                "attributes": [
-                  {
-                    "name": "content",
-                    "value": "This is a paragraph within a quote"
-                  },
-                  {
-                    "name": "dropCap",
-                    "value": ""
-                  }
-                ]
-              }
+            "id": "4",
+            "parentId": null,
+            "attributes": [
+              { "name": "value", "value": "" }
+            ]
+          },
+          {
+            "name": "core/paragraph",
+            "id": "QmxvY2tEYXRhVjI6NDY6NQ==",
+            "parentId": "4",
+            "attributes": [
+              { "name": "content", "value": "This is a paragraph within a quote" },
+              { "name": "dropCap", "value": "false" }
             ]
           }
         ]
@@ -632,59 +637,173 @@ The code above produces this HTML from post data:
 
 ### Block hierarchy reconstruction
 
-The purpose of this function is to take the flattened `innerBlocks` list under each root block, and reconstruct the block hierarchy.
+The purpose of this function is to take the flattened set of GraphQL blocks, and reconstruct the block hierarchy.
 
 The logic is as follows:
 
-1. Loop through each block.
-2. Loop through each block's `innerBlocks`:
-   * For each `innerBlock`, check if the `parentId` matches the `id` of the root block.
-   * If yes, add that `innerBlock` to a new list.
-   * If no, go over the newly constructed list and repeat step 2's logic as the block could be nested under another `innerBlock`.
+1. Partition blocks by `parentId` into `blocksByParentId`.
+2. Loop through root-level blocks.
+3. For each block, determine inner blocks by using `blocksByParentId` as a look-up table.
+4. Apply the same step (3) recursively for that block's `innerBlocks`, if present.
 
-This logic has been split over two functions, with the core logic (steps 1, 2a, 2b) being in the function below and the recursive case (2c) being handled in the second function called `convertInnerBlocksToHierarchy`.
+Given `payload` contains a GraphQL response with `blocksDataV2` data, `blockHierarchy` will contain the nested result.
 
 ```js
-const blocks = payload.data?.post?.blocksData?.blocks ?? [];
+const blocks = payload.data?.post?.blocksDataV2?.blocks ?? [];
 
-// Iterate over the blocks.
-for (const block of blocks) {
-  // skip if the innerBlocks are not set.
-  if (!block.innerBlocks) {
-    continue;
+// Partition blocks by parentId, using 'root' for blocks without a parentId.
+const blocksByParentId = blocks.reduce( ( acc, block ) => {
+  const parentId = block.parentId || 'root';
+
+  // Create or append to the array of other blocks sharing this parentId
+  acc[ parentId ] = ( acc[ parentId ] || [] ).concat( block );
+
+  return acc;
+}, {} );
+
+function addInnerBlocks( block, blocksByParentId ) {
+  // If this block has children:
+  if ( block.id in blocksByParentId ) {
+    // Recurse into child blocks and setup their innerBlocks
+    let innerBlocks = blocksByParentId[ block.id ].map( innerBlock => {
+      return addInnerBlocks( innerBlock, blocksByParentId );
+    } );
+
+    // Set the completed innerBlocks on this block
+    block.innerBlocks = innerBlocks;
   }
 
-  // Get the innerBlocks.
-  const innerBlocks = block.innerBlocks;
-  // Create a new array to store the hierarchy.
-  let innerBlockHierarchy = [];
-  // Iterate over the innerBlocks and use the parentID and ID to reconstruct the hierarchy.
-  for (const innerBlock of innerBlocks) {
-    // If the innerBlock's parentId matches the block's id, add it to the hierarchy.
-    if (innerBlock.parentId === block.id) {
-      innerBlockHierarchy.push(innerBlock);
-    } else {
-      // Otherwise, use the recursive function to find the right parent.
-      convertInnerBlocksToHierarchy(innerBlock, innerBlockHierarchy);
-    }
-  }
-
-  // Add the innerBlockHierarchy to the block.
-  block.innerBlocks = innerBlockHierarchy;
+  return block;
 }
 
-function convertInnerBlocksToHierarchy( innerBlock, innerBlockHierarchy) {
-  for (const innerBlockParent of innerBlockHierarchy) {
-    // If the innerBlock's parentId matches the innerBlockParent's id, add it to the hierarchy.
-    if (innerBlock.parentId === innerBlockParent.id) {
-      innerBlockParent.innerBlocks = innerBlockParent.innerBlocks || [];
-      innerBlockParent.innerBlocks.push(innerBlock);
-    // If the innerBlockParent has innerBlocks, loop over them and add it under it the right parent.
-    } else if (innerBlockParent.innerBlocks) {
-      convertInnerBlocksToHierarchy(innerBlock, innerBlockParent.innerBlocks);
+// Recursively add innerBlocks to root blocks.
+const blockHierarchy = blocksByParentId[ 'root' ].map( block => addInnerBlocks( block, blocksByParentId ) );
+```
+
+#### Example
+
+This is a post containing two columns, each with an inner `core/paragraph`:
+
+![Post containing two columns, each with a paragraph][media-example-nested-columns]
+
+This post is queried with GraphQL:
+
+```graphql
+query PostQuery {
+  post(id: 123, idType: DATABASE_ID) {
+    blocksDataV2 {
+      blocks {
+        name
+        id
+        parentId
+        attributes {
+          name
+          value
+        }
+      }
     }
   }
 }
+```
+
+GraphQL returns this payload:
+
+```json
+{
+  "data": {
+    "post": {
+      "blocksDataV2": {
+        "blocks": [
+          {
+            "name": "core/columns",
+            "id": "1",
+            "parentId": null,
+          },
+          {
+            "name": "core/column",
+            "id": "2",
+            "parentId": "1",
+          },
+          {
+            "name": "core/paragraph",
+            "id": "3",
+            "parentId": "2",
+            "attributes": [
+              { "name": "content", "value": "Left column" }
+            ]
+          },
+          {
+            "name": "core/column",
+            "id": "4",
+            "parentId": "1",
+          },
+          {
+            "name": "core/paragraph",
+            "id": "5",
+            "parentId": "4",
+            "attributes": [
+              { "name": "content", "value": "Right column" }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+Next, we run the block hierarchy reconstruction code above on the payload data:
+
+```js
+const blocks = payload.data?.post?.blocksDataV2?.blocks ?? [];
+
+// ...
+
+const blockHierarchy = blocksByParentId[ 'root' ].map( block => addInnerBlocks( block, blocksByParentId ) );
+```
+
+`blockHierarchy` now holds:
+
+```json
+[
+  {
+    "name": "core/columns",
+    "id": "1",
+    "parentId": null,
+    "innerBlocks": [
+      {
+        "name": "core/column",
+        "id": "2",
+        "parentId": "1",
+        "innerBlocks": [
+          {
+            "name": "core/paragraph",
+            "id": "3",
+            "parentId": "2",
+            "attributes": [
+              { "name": "content", "value": "Left column" }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "core/column",
+        "id": "4",
+        "parentId": "1",
+        "innerBlocks": [
+          {
+            "name": "core/paragraph",
+            "id": "5",
+            "parentId": "4",
+            "attributes": [
+              { "name": "content", "value": "Right column" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
 ```
 
 ## Limitations
@@ -1058,7 +1177,7 @@ This query parameter cannot be used at the same time as [the `include` query par
 
 Note that custom block filter rules can also be created in code via [the `vip_block_data_api__allow_block` filter](#vip_block_data_api__allow_block).
 
-## Code Filters
+## Filters and actions
 
 ### GraphQL
 
@@ -1071,7 +1190,7 @@ add_filter( 'vip_block_data_api__is_graphql_enabled', '__return_false', 10, 1 );
 
 ### REST
 
-These filters can be applied to limit access to the REST API and modify the output of parsed blocks.
+These filters and actions can be applied to limit access to the REST API and modify the output of parsed blocks.
 
 ### `vip_block_data_api__rest_validate_post_id`
 
@@ -1180,6 +1299,38 @@ Note that this filter is evaluated after the [`include`](#include) and [`exclude
 
 ---
 
+### `vip_block_data_api__sourced_block_inner_blocks`
+
+Modify a block's inner blocks before they are recursively added to the result tree.
+
+```php
+/**
+ * Filters a block's inner blocks before recursive iteration.
+ *
+ * @param array  $inner_blocks An array of inner block (WP_Block) instances.
+ * @param string $block_name   Name of the parsed block, e.g. 'core/paragraph'.
+ * @param int    $post_id      Post ID associated with the parsed block.
+ * @param array  $block        Result of parse_blocks() for this block.
+ */
+$inner_blocks = apply_filters( 'vip_block_data_api__sourced_block_inner_blocks', $inner_blocks, $block_name, $this->post_id, $block->parsed_block );
+```
+
+This is useful if you want to add or remove inner blocks from the tree based on the parent block. Note that the inner blocks are WP_Block instances, not the associative arrays returned by `parse_blocks`.
+
+```php
+add_filter( 'vip_block_data_api__sourced_block_inner_blocks', 'remove_gallery_inner_blocks', 10, 4 );
+
+function remove_gallery_inner_blocks( $inner_blocks, $block_name, $post_id, $block ) {
+    if ( 'core/gallery' === $block_name ) {
+        return [];
+    }
+
+    return $inner_blocks;
+}
+```
+
+---
+
 ### `vip_block_data_api__sourced_block_result`
 
 Modify or add attributes to a block's output in the Block Data API.
@@ -1190,11 +1341,11 @@ Modify or add attributes to a block's output in the Block Data API.
  *
  * @param array  $sourced_block An associative array of parsed block data with keys 'name' and 'attributes'.
  * @param string $block_name    The name of the parsed block, e.g. 'core/paragraph'.
- * @param string $post_id       The post ID associated with the parsed block.
- * @param string $block         The result of parse_blocks() for this block.
+ * @param int    $post_id       The post ID associated with the parsed block.
+ * @param array  $block         The result of parse_blocks() for this block.
  *                              Contains 'blockName', 'attrs', 'innerHTML', and 'innerBlocks' keys.
  */
-$sourced_block = apply_filters( 'vip_block_data_api__sourced_block_result', $sourced_block, $block_name, $post_id, $block);
+$sourced_block = apply_filters( 'vip_block_data_api__sourced_block_result', $sourced_block, $block_name, $post_id, $block->parsed_block);
 ```
 
 This is useful when block rendering requires attributes stored in post metadata or outside of a block's markup. This filter can be used to add attributes to any core or custom block. For example:
@@ -1217,6 +1368,126 @@ function add_custom_block_metadata( $sourced_block, $block_name, $post_id, $bloc
 Direct block HTML can be accessed through `$block['innerHTML']`. This may be useful if manual HTML parsing is necessary to gather data from a block.
 
 For another example of how this filter can be used to extend block data, we have implemented a default image block filter in [`src/parser/block-additions/core-image.php`][repo-core-image-block-addition]. This filter is automatically called on `core/image` blocks to add `width` and `height` to image attributes.
+
+---
+
+### `vip_block_data_api__before_parse_post_content`
+
+Modify raw post content before it's parsed by the Block Data API. The `$post_content` provided by this filter is directly what is stored in the post database before any processing occurs.
+
+```php
+/**
+ * Filters content before parsing blocks in a post.
+ *
+ * @param string $post_content The content of the post being parsed.
+ * @param int $post_id Post ID associated with the content.
+ */
+$post_content = apply_filters( 'vip_block_data_api__before_parse_post_content', $post_content, $post_id );
+```
+
+For example, this could be used to modify a block's type before parsing. The code below replaces instances of `test/invalid-block` blocks with `core/paragraph`:
+
+```php
+add_filter( 'vip_block_data_api__before_parse_post_content', 'replace_invalid_blocks' );
+
+function replace_invalid_blocks( $post_content, $post_id ) {
+    return str_replace( 'wp:test/invalid-block', 'wp:paragraph', $post_content );
+}
+
+$html = '
+    <!-- wp:test/invalid-block -->
+    <p>Block content!</p>
+    <!-- /wp:test/invalid-block -->
+';
+
+$content_parser = new ContentParser();
+$result         = $content_parser->parse( $html );
+
+// Evaluates to true
+assertEquals( [
+    [
+        'name'       => 'core/paragraph',
+        'attributes' => [
+            'content' => 'Block content!',
+        ],
+    ],
+], $result['blocks'] );
+```
+
+**Warning**
+
+Be careful with content modification before parsing. In the example above, if a block contained the text "wp:test/invalid-block" outside of a block header, this would also be changed to "wp:paragraph". This is likely not the intent of the code.
+
+All block markup is sensitive to changes, even changes in whitespace. We've added this filter to make the plugin flexible, but any transforms to `post_content` should be done with extreme care. Strongly consider adding tests to any usage of this filter.
+
+---
+
+### `vip_block_data_api__after_parse_blocks`
+
+Modify the Block Data API REST endpoint response.
+
+```php
+/**
+ * Filters the API result before returning parsed blocks in a post.
+ *
+ * @param string $result The successful API result, contains 'blocks' key with an array
+ *                       of block data, and optionally 'warnings' and 'debug' keys.
+ * @param int $post_id Post ID associated with the content.
+ */
+$result = apply_filters( 'vip_block_data_api__after_parse_blocks', $result, $post_id );
+```
+
+This filter is called directly before returning a result in the REST API. Use this filter to add additional metadata or debug information to the API output.
+
+```php
+add_filter( 'vip_block_data_api__after_parse_blocks', 'add_block_data_debug_info', 10, 2 );
+
+function add_block_data_debug_info( $result, $post_id ) {
+	$result['debug']['my-value'] = 123;
+
+	return $result;
+}
+```
+
+This would add `debug.my-value` to all Block Data API REST results:
+
+```bash
+> curl https://my.site/wp-json/vip-block-data-api/v1/posts/1/blocks
+
+{
+  "debug": {
+    "my-value": 123
+  },
+  "blocks": [ /* ... */ ]
+}
+```
+
+---
+
+### `vip_block_data_api__before_block_render`
+### `vip_block_data_api__after_block_render`
+
+Perform actions before or after blocks are rendered by the `ContentParser`, such as hooking into core block rendering functions.
+
+```php
+add_action( 'vip_block_data_api__before_block_render', 'add_block_context_filter', 10, 2 );
+add_action( 'vip_block_data_api__after_block_render', 'remove_block_context_filter', 10, 2 );
+
+function block_context_filter( $block_context, $parsed_block ) {
+    // Modify block context before rendering
+    $block_context['custom/injected-context'] = 'example';
+
+    return $block_context;
+}
+
+function add_block_context_filter( $blocks, $post_id ) {
+    add_filter( 'render_block_context', 'block_context_filter', 10, 2 );
+}
+
+function remove_block_context_filter( $blocks, $post_id ) {
+    remove_filter( 'render_block_context', 'block_context_filter', 10 );
+}
+```
 
 ## Analytics
 
@@ -1310,13 +1581,16 @@ composer run test
 
 <!-- Links -->
 [gutenberg-code-image-caption]: https://github.com/WordPress/gutenberg/blob/3d2a6d7eaa4509c4d89bde674e9b73743868db2c/packages/block-library/src/image/block.json#L30-L35
+[gutenberg-code-table-body]: https://github.com/WordPress/gutenberg/blob/74a06c73613d9f90d66905c14d36eda19101999e/packages/block-library/src/table/block.json#L64-L108
 [gutenberg-pr-core-list-innerblocks]: https://href.li/?https://github.com/WordPress/gutenberg/pull/39487
 [media-example-caption-plain]: https://github.com/Automattic/vip-block-data-api/blob/media/example-caption-plain.png
 [media-example-caption-rich-text]: https://github.com/Automattic/vip-block-data-api/blob/media/example-caption-rich-text.png
 [media-example-heading-paragraph]: https://github.com/Automattic/vip-block-data-api/blob/media/example-header-paragraph.png
 [media-example-list-quote]: https://github.com/Automattic/vip-block-data-api/blob/media/example-utility-quote-list.png
 [media-example-media-text]: https://github.com/Automattic/vip-block-data-api/blob/media/example-media-text.png
+[media-example-nested-columns]: https://github.com/Automattic/vip-block-data-api/blob/media/example-nested-columns.png
 [media-example-pullquote]: https://github.com/Automattic/vip-block-data-api/blob/media/example-pullquote.png
+[media-example-table]: https://github.com/Automattic/vip-block-data-api/blob/media/example-table.png
 [media-example-utility-quote-list]: https://github.com/Automattic/vip-block-data-api/blob/media/example-list-quote.png
 [media-plugin-activate]: https://github.com/Automattic/vip-block-data-api/blob/media/plugin-activate.png
 [media-preact-media-text]: https://github.com/Automattic/vip-block-data-api/blob/media/preact-media-text.png
@@ -1324,6 +1598,7 @@ composer run test
 [repo-analytics]: src/analytics/analytics.php
 [repo-core-image-block-addition]: src/parser/block-additions/core-image.php
 [repo-issue-create]: https://github.com/Automattic/vip-block-data-api/issues/new/choose
+[repo-readme-1.2.4]: https://github.com/Automattic/vip-block-data-api/blob/1.2.4/README.md#graphql
 [repo-releases]: https://github.com/Automattic/vip-block-data-api/releases
 [vip-go-mu-plugins]: https://github.com/Automattic/vip-go-mu-plugins/
 [vip-go-skeleton-plugin-loader-example]: https://github.com/Automattic/vip-go-skeleton/blob/ce21ab0/client-mu-plugins/plugin-loader.php

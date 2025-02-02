@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'wp-graphql/wp-graphql',
-        'pretty_version' => 'v1.22.1',
-        'version' => '1.22.1.0',
-        'reference' => '181c9e06fa822ff4af3e2ed2d5bbcf02cb485170',
+        'pretty_version' => 'v1.29.3',
+        'version' => '1.29.3.0',
+        'reference' => 'e8b265b4cd3e33c3631defbd5ee63f71a8936f41',
         'type' => 'wordpress-plugin',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         'appsero/client' => array(
-            'pretty_version' => 'v1.2.1',
-            'version' => '1.2.1.0',
-            'reference' => 'd110c537f4ca92ac7f3398eee67cc6bdf506a4fb',
+            'pretty_version' => 'v2.0.4',
+            'version' => '2.0.4.0',
+            'reference' => '12ff65b9770286d21edf314e7acfcd26fdde3315',
             'type' => 'library',
             'install_path' => __DIR__ . '/../appsero/client',
             'aliases' => array(),
@@ -38,9 +38,9 @@
             'dev_requirement' => false,
         ),
         'wp-graphql/wp-graphql' => array(
-            'pretty_version' => 'v1.22.1',
-            'version' => '1.22.1.0',
-            'reference' => '181c9e06fa822ff4af3e2ed2d5bbcf02cb485170',
+            'pretty_version' => 'v1.29.3',
+            'version' => '1.29.3.0',
+            'reference' => 'e8b265b4cd3e33c3631defbd5ee63f71a8936f41',
             'type' => 'wordpress-plugin',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
