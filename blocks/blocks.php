@@ -57,7 +57,7 @@ function get_content_blocks( $post_model ) {
  * @return array
  */
 function transform_block_attributes( $block ) {
-	if ( 'core/image' === $block['name'] ) {
+	if ( ! empty( $block['name'] ) && 'core/image' === $block['name'] && ! empty( $block['attributes']['id'] ) ) {
 		$attachment_metadata = \wp_get_attachment_metadata( $block['attributes']['id'] );
 
 		$block['attributes']['src']            = \wp_get_attachment_url( $block['attributes']['id'] );
