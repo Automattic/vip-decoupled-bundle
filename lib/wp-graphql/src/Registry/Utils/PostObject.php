@@ -198,14 +198,14 @@ class PostObject {
 					),
 					'resolve'        => static function ( Post $post, $args, AppContext $context, ResolveInfo $info ) {
 						$taxonomies = \WPGraphQL::get_allowed_taxonomies();
-						$terms      = wp_get_post_terms( $post->ID, $taxonomies, [ 'fields' => 'ids' ] );
+						$object_id  = true === $post->isPreview && ! empty( $post->parentDatabaseId ) ? $post->parentDatabaseId : $post->ID;
 
-						if ( empty( $terms ) || is_wp_error( $terms ) ) {
+						if ( empty( $object_id ) ) {
 							return null;
 						}
-						$resolver = new TermObjectConnectionResolver( $post, $args, $context, $info, $taxonomies );
-						$resolver->set_query_arg( 'include', $terms );
 
+						$resolver = new TermObjectConnectionResolver( $post, $args, $context, $info, $taxonomies );
+						$resolver->set_query_arg( 'object_ids', absint( $object_id ) );
 						return $resolver->get_connection();
 					},
 				];
@@ -583,6 +583,70 @@ class PostObject {
 
 						/** @var \WPGraphQL\Model\Post $image */
 						return $image->get_source_url_by_size( $size );
+					},
+				],
+				'file'         => [
+					'type'        => 'String',
+					'description' => __( 'The filename of the mediaItem for the specified size (default size is full)', 'wp-graphql' ),
+					'args'        => [
+						'size' => [
+							'type'        => 'MediaItemSizeEnum',
+							'description' => __( 'Size of the MediaItem to return', 'wp-graphql' ),
+						],
+					],
+					'resolve'     => static function ( $source, $args ) {
+						// If a size is specified, get the size-specific filename
+						if ( ! empty( $args['size'] ) ) {
+							$size = 'full' === $args['size'] ? 'large' : $args['size'];
+
+							// Get the metadata which contains size information
+							$metadata = wp_get_attachment_metadata( $source->databaseId );
+
+							if ( ! empty( $metadata['sizes'][ $size ]['file'] ) ) {
+								return $metadata['sizes'][ $size ]['file'];
+							}
+						}
+
+						// Default to original file
+						$attached_file = get_post_meta( $source->databaseId, '_wp_attached_file', true );
+						return ! empty( $attached_file ) ? basename( $attached_file ) : null;
+					},
+				],
+				'filePath'     => [
+					'type'        => 'String',
+					'description' => __( 'The path to the original file relative to the uploads directory', 'wp-graphql' ),
+					'args'        => [
+						'size' => [
+							'type'        => 'MediaItemSizeEnum',
+							'description' => __( 'Size of the MediaItem to return', 'wp-graphql' ),
+						],
+					],
+					'resolve'     => static function ( $source, $args ) {
+						// Get the upload directory info
+						$upload_dir           = wp_upload_dir();
+						$relative_upload_path = wp_make_link_relative( $upload_dir['baseurl'] );
+
+						// If a size is specified, get the size-specific path
+						if ( ! empty( $args['size'] ) ) {
+							$size = 'full' === $args['size'] ? 'large' : $args['size'];
+
+							// Get the metadata which contains size information
+							$metadata = wp_get_attachment_metadata( $source->databaseId );
+
+							if ( ! empty( $metadata['sizes'][ $size ]['file'] ) ) {
+								$file_path = $metadata['file'];
+								return path_join( $relative_upload_path, dirname( $file_path ) . '/' . $metadata['sizes'][ $size ]['file'] );
+							}
+						}
+
+						// Default to original file path
+						$attached_file = get_post_meta( $source->databaseId, '_wp_attached_file', true );
+
+						if ( empty( $attached_file ) ) {
+							return null;
+						}
+
+						return path_join( $relative_upload_path, $attached_file );
 					},
 				],
 				'fileSize'     => [

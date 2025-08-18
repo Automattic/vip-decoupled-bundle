@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.5
+
+- **WPGraphQL:** Updated to v1.32.1.
+
 ## 1.2.4
 
 - [**Fix core/image PHP warnings**](https://github.com/Automattic/vip-decoupled-bundle/pull/90): Fixes empty core/image blocks causing PHP warnings
