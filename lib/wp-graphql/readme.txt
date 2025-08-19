@@ -2,13 +2,11 @@
 Contributors: jasonbahl, tylerbarnes1, ryankanner, chopinbach, kidunot89, justlevine
 Tags: GraphQL, Headless, REST API, Decoupled, React
 Requires at least: 5.0
-Tested up to: 6.6
+Tested up to: 6.7.1
 Requires PHP: 7.1
-Stable tag: 1.30.0
+Stable tag: 1.32.1
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
-
-=== Short Description ===
 
 WPGraphQL adds a flexible and powerful GraphQL API to WordPress, enabling efficient querying and interaction with your site's data.
 
@@ -74,11 +72,23 @@ Learn more about how [Appsero collects and uses this data](https://appsero.com/p
 
 == Upgrade Notice ==
 
+= 1.32.0 =
+
+In <a href="https://github.com/wp-graphql/wp-graphql/pull/3293">#3293</a> a bug was fixed in how the `MediaDetails.file` field resolves. The previous behavior was a bug, but might have been used as a feature. If you need the field to behave the same as it did prior to this bugfix, you can [follow the instructions here](https://github.com/wp-graphql/wp-graphql/pull/3293) to override the field's resolver to how it worked before.
+
+= 1.30.0 =
+
+This release includes a new feature to implement a SemVer-compliant update checker, which will prevent auto-updates for major releases that include breaking changes.
+
+It also exposes the `EnqueuedAsset.group` and `EnqueuedScript.location` fields to the schema. Additionally, it adds a WPGraphQL Extensions page to the WordPress admin.
+
+There are no known breaking changes in this release, however, we recommend testing on staging servers to ensure the changes don't negatively impact your projects.
+
 = 1.28.0 =
 
 This release contains an internal refactor for how the Type Registry is generated which should lead to significant performance improvements for most users.
 
-While there are no intentional breaking changes, because this change impacts every suser we highly recommend testing this release thoroughly on staging servers to ensure the changes don't negatively impact your projects.
+While there are no intentional breaking changes, because this change impacts every user we highly recommend testing this release thoroughly on staging servers to ensure the changes don't negatively impact your projects.
 
 = 1.26.0 =
 
@@ -262,6 +272,62 @@ The `uri` field was non-null on some Types in the Schema but has been changed to
 Composer dependencies are no longer versioned in Github. Recommended install source is WordPress.org or using Composer to get the code from Packagist.org or WPackagist.org.
 
 == Changelog ==
+
+= 1.32.1 =
+
+**Chores / Bugfixes**
+
+- [#3308](https://github.com/wp-graphql/wp-graphql/pull/3308): fix: update term mutation was preventing terms from removing the parentId
+
+
+= 1.32.0 =
+
+**New Features**
+
+- [#3294](https://github.com/wp-graphql/wp-graphql/pull/3294): feat: introduce new fields for getting mediaItem files and filePaths
+
+**Chores / Bugfixes**
+
+- [#3293](https://github.com/wp-graphql/wp-graphql/pull/3293): fix: correct the resolver for the MediaDetails.file field to return the file name
+- [#3299](https://github.com/wp-graphql/wp-graphql/pull/3299): chore: restore excluded PHPCS rules
+- [#3301](https://github.com/wp-graphql/wp-graphql/pull/3301): fix: React backwards-compatibility with WP < 6.6
+- [#3302](https://github.com/wp-graphql/wp-graphql/pull/3302): chore: update NPM dependencies
+- [#3297](https://github.com/wp-graphql/wp-graphql/pull/3297): fix: typo in `Extensions\Registry\get_extensions()` method name
+- [#3303](https://github.com/wp-graphql/wp-graphql/pull/3303): chore: cleanup git cache
+- [#3298](https://github.com/wp-graphql/wp-graphql/pull/3298): chore: submit GF, Rank Math, and Headless Login plugins
+- [#3287](https://github.com/wp-graphql/wp-graphql/pull/3287): chore: fixes the syntax of the readme.txt so that the short description is shown on WordPress.org
+- [#3284](https://github.com/wp-graphql/wp-graphql/pull/3284): fix: Updated docs link for example of hierarchical data
+
+
+- update stable tag
+
+= 1.31.0 =
+
+**New Features**
+
+- [#3278](https://github.com/wp-graphql/wp-graphql/pull/3278): feat: add option to provide custom file path for static schemas when using the `wp graphql generate-static-schema` command
+
+**Chores / Bugfixes**
+
+- [#3284](https://github.com/wp-graphql/wp-graphql/pull/3284): fix: fix: Updated docs link for example of hierarchical data
+- [#3283](https://github.com/wp-graphql/wp-graphql/pull/3283): fix: Error in update checker when WPGraphQL is active as an mu-plugin
+
+
+= 1.30.0 =
+
+**Chores / Bugfixes**
+
+- [#3250](https://github.com/wp-graphql/wp-graphql/pull/3250): fix: receiving post for Incorrect uri
+- [#3268](https://github.com/wp-graphql/wp-graphql/pull/3268): ci: trigger PR workflows on release/* branches
+- [#3267](https://github.com/wp-graphql/wp-graphql/pull/3267): chore: fix bleeding edge/deprecated PHPStan smells [first pass]
+- [#3270](https://github.com/wp-graphql/wp-graphql/pull/3270): build(deps): bump the npm_and_yarn group across 1 directory with 3 updates
+- [#3271](https://github.com/wp-graphql/wp-graphql/pull/3271): fix: default cat should not be added when other categories are added
+
+**New Features**
+
+- [#3251](https://github.com/wp-graphql/wp-graphql/pull/3251): feat: implement SemVer-compliant update checker
+- [#3196](https://github.com/wp-graphql/wp-graphql/pull/3196): feat: expose EnqueuedAsset.group and EnqueuedScript.location to schema
+- [#3188](https://github.com/wp-graphql/wp-graphql/pull/3188): feat: Add WPGraphQL Extensions page to the WordPress admin
 
 = 1.29.3 =
 

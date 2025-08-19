@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294
+class ComposerStaticInita283aaa5719896325f79aace2afd105c
 {
     public static $prefixLengthsPsr4 = array (
         'W' => 
@@ -244,9 +244,16 @@ class ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294
         'WPGraphQL' => __DIR__ . '/../..' . '/src/WPGraphQL.php',
         'WPGraphQL\\Admin\\Admin' => __DIR__ . '/../..' . '/src/Admin/Admin.php',
         'WPGraphQL\\Admin\\AdminNotices' => __DIR__ . '/../..' . '/src/Admin/AdminNotices.php',
+        'WPGraphQL\\Admin\\Extensions\\Extensions' => __DIR__ . '/../..' . '/src/Admin/Extensions/Extensions.php',
+        'WPGraphQL\\Admin\\Extensions\\Registry' => __DIR__ . '/../..' . '/src/Admin/Extensions/Registry.php',
         'WPGraphQL\\Admin\\GraphiQL\\GraphiQL' => __DIR__ . '/../..' . '/src/Admin/GraphiQL/GraphiQL.php',
         'WPGraphQL\\Admin\\Settings\\Settings' => __DIR__ . '/../..' . '/src/Admin/Settings/Settings.php',
         'WPGraphQL\\Admin\\Settings\\SettingsRegistry' => __DIR__ . '/../..' . '/src/Admin/Settings/SettingsRegistry.php',
+        'WPGraphQL\\Admin\\Updates\\PluginsScreenLoader' => __DIR__ . '/../..' . '/src/Admin/Updates/PluginsScreenLoader.php',
+        'WPGraphQL\\Admin\\Updates\\SemVer' => __DIR__ . '/../..' . '/src/Admin/Updates/SemVer.php',
+        'WPGraphQL\\Admin\\Updates\\UpdateChecker' => __DIR__ . '/../..' . '/src/Admin/Updates/UpdateChecker.php',
+        'WPGraphQL\\Admin\\Updates\\Updates' => __DIR__ . '/../..' . '/src/Admin/Updates/Updates.php',
+        'WPGraphQL\\Admin\\Updates\\UpdatesScreenLoader' => __DIR__ . '/../..' . '/src/Admin/Updates/UpdatesScreenLoader.php',
         'WPGraphQL\\AppContext' => __DIR__ . '/../..' . '/src/AppContext.php',
         'WPGraphQL\\Connection\\Comments' => __DIR__ . '/../..' . '/src/Connection/Comments.php',
         'WPGraphQL\\Connection\\MenuItems' => __DIR__ . '/../..' . '/src/Connection/MenuItems.php',
@@ -365,6 +372,7 @@ class ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294
         'WPGraphQL\\Type\\Enum\\PostObjectsConnectionOrderbyEnum' => __DIR__ . '/../..' . '/src/Type/Enum/PostObjectsConnectionOrderbyEnum.php',
         'WPGraphQL\\Type\\Enum\\PostStatusEnum' => __DIR__ . '/../..' . '/src/Type/Enum/PostStatusEnum.php',
         'WPGraphQL\\Type\\Enum\\RelationEnum' => __DIR__ . '/../..' . '/src/Type/Enum/RelationEnum.php',
+        'WPGraphQL\\Type\\Enum\\ScriptLoadingGroupLocationEnum' => __DIR__ . '/../..' . '/src/Type/Enum/ScriptLoadingGroupLocationEnum.php',
         'WPGraphQL\\Type\\Enum\\ScriptLoadingStrategyEnum' => __DIR__ . '/../..' . '/src/Type/Enum/ScriptLoadingStrategyEnum.php',
         'WPGraphQL\\Type\\Enum\\TaxonomyEnum' => __DIR__ . '/../..' . '/src/Type/Enum/TaxonomyEnum.php',
         'WPGraphQL\\Type\\Enum\\TaxonomyIdTypeEnum' => __DIR__ . '/../..' . '/src/Type/Enum/TaxonomyIdTypeEnum.php',
@@ -455,9 +463,9 @@ class ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit44de4e5f0aa4b88b3af8f8f2bf13a294::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita283aaa5719896325f79aace2afd105c::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita283aaa5719896325f79aace2afd105c::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInita283aaa5719896325f79aace2afd105c::$classMap;
 
         }, null, ClassLoader::class);
     }
