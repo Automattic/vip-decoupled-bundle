@@ -1,7 +1,7 @@
 # WordPress VIP Decoupled Plugin Bundle
 
 
-> ⚠️ This project is archived and is not maintained anymore. The code you see is provided for the reference purpose only and is not guaranteed to work anymore.
+> ⚠️ This project is archived and no longer maintained. The code you see is provided for the reference purpose only and is not guaranteed to work.
 
 
 This plugin bundle provides a number of plugins to help you quickly setup a decoupled WordPress application. It is designed to support VIP’s [Next.js boilerplate][nextjs-boilerplate] but can be used to support any decoupled frontend. It solves a number of common problems facing decoupled sites, including:
